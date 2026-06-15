@@ -1,0 +1,933 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🦁 Zoo Safari Classroom Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chango&family=JUA&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables & Theme Palette */
+        :root {
+            --pastel-brown: #A67C52;
+            --pastel-yellow: #FFF3CD;
+            --pastel-green: #D4EDDA;
+            --warm-cream: #FDFBF7;
+            --soft-orange: #FFE0B2;
+            --text-brown: #5C3A21;
+            --white: #FFFFFF;
+            --muted-gray: #BDC3C7;
+            --accent-red: #FF6B6B;
+
+            /* Enhanced Safari Accents */
+            --safari-orange: #FFB74D;
+            --safari-box-cream: #FFF8E1;
+            --safari-box-yellow: #FFE082;
+            --deep-safari-brown: #6D4C41;
+            --soft-cream-white: #FFF3E0;
+            --warm-beige-glow: #F5E6C8;
+            
+            /* Responsive Font Scale Dimension Variable */
+            --num-size: clamp(6rem, 16vw, 16rem);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Full Viewport App Constraints */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: background-color 0.15s ease;
+        }
+
+        /* Flash screen effect overlay modifier rule */
+        body.alarm-flash-active {
+            background-color: var(--accent-red) !important;
+        }
+
+        /* Compact Header Component Layout */
+        header {
+            background-color: var(--pastel-brown);
+            color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+
+        /* Permanent Signature Watermark Credit Layout Elements */
+        .branding {
+            font-size: 1.1rem;
+            line-height: 1.3;
+            white-space: pre-line;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            z-index: 1010;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Themed Safari Buttons Framework */
+        button, .btn {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            border: 3px solid var(--pastel-brown);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 0 var(--pastel-brown);
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--soft-orange);
+            transform: translateY(-2px);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--pastel-brown);
+        }
+
+        /* Specific Button Class Variants */
+        button#btn-start {
+            background-color: var(--pastel-green);
+            font-weight: bold;
+        }
+        
+        button#btn-pause {
+            background-color: var(--pastel-yellow);
+        }
+
+        button#btn-reset {
+            background-color: var(--soft-orange);
+        }
+
+        button:disabled {
+            background-color: var(--muted-gray) !important;
+            border-color: #7F8C8D !important;
+            box-shadow: 0 4px 0 #7F8C8D !important;
+            color: #7F8C8D !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+
+        /* Audio Toggle Control Switcher Styling Layout */
+        .music-toggle-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 15px;
+            gap: 8px;
+            color: var(--white);
+            font-size: 0.95rem;
+        }
+
+        .music-toggle-container input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--safari-orange);
+        }
+
+        /* Teacher Input Control Sub-Panel Interface Layout */
+        .controls-panel {
+            background-color: var(--pastel-yellow);
+            border: 3px dashed var(--pastel-brown);
+            border-radius: 15px;
+            padding: 10px 20px;
+            margin: 10px auto;
+            width: 92%;
+            max-width: 650px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 10;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .controls-panel.running-hidden {
+            opacity: 0.4;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .time-field-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-field-wrapper span {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--deep-safari-brown);
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        .time-input-group input {
+            font-family: 'JUA', sans-serif;
+            width: 75px;
+            padding: 8px 4px;
+            font-size: 1.4rem;
+            border: 3px solid var(--pastel-brown);
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+            background-color: var(--white);
+        }
+
+        .step-btn {
+            padding: 4px 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 3px 0 var(--pastel-brown);
+        }
+
+        .input-separator {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--pastel-brown);
+            margin-bottom: 18px;
+        }
+
+        /* Centralized Stage Workspace Layout */
+        main {
+            flex: 1;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* GIANT SAFARI TIMER DISPLAY BOX CONTAINER */
+        .large-selection-window {
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.95) 0%, rgba(255, 224, 130, 0.95) 100%);
+            border: 8px solid var(--pastel-brown);
+            border-radius: 45px;
+            width: 100%;
+            max-width: 850px;
+            height: 90%;
+            max-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                inset 0 0 35px rgba(255, 213, 79, 0.45), 
+                0 16px 0 var(--pastel-brown),
+                0 0 30px rgba(165, 214, 167, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Presentational Safari Frame Decorative Elements */
+        .large-selection-window::before {
+            content: "🦁";
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            font-size: 2.2rem;
+            opacity: 0.35;
+        }
+
+        .large-selection-window::after {
+            content: "🌴";
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            font-size: 2.4rem;
+            opacity: 0.35;
+        }
+
+        /* Ticking Active State Styles Modification Overlay */
+        .large-selection-window.timer-running {
+            border-color: var(--safari-orange);
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.96) 0%, rgba(255, 183, 77, 0.96) 100%);
+            box-shadow: 
+                inset 0 0 50px rgba(255, 183, 77, 0.55), 
+                0 16px 0 var(--safari-orange),
+                0 0 40px rgba(255, 183, 77, 0.4);
+            animation: slotPulseShake 4s infinite ease-in-out;
+        }
+
+        /* Terminated Time Out Alarm Mode Presentation Frame Overlay */
+        .large-selection-window.timer-expired {
+            background: linear-gradient(135deg, #FFCDD2 0%, #EF5350 100%);
+            border-color: #B71C1C;
+            box-shadow: 
+                inset 0 0 45px rgba(183, 28, 28, 0.6), 
+                0 16px 0 #B71C1C,
+                0 0 45px rgba(239, 83, 80, 0.6);
+            animation: alarmStructuralShake 0.15s infinite alternate;
+        }
+
+        /* Top Presentational Context Header Title */
+        .display-label {
+            font-size: min(2.2rem, 5vh);
+            color: var(--text-brown);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .timer-expired .display-label {
+            color: var(--white) !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* GIANT CHANGO FONT COUNTDOWN SYMBOLS METRIC - NO STROKES */
+        .display-number {
+            font-family: 'Chango', sans-serif;
+            font-size: var(--num-size);
+            font-weight: normal;
+            line-height: 1.1;
+            padding: 10px;
+            margin: 5px 0;
+            -webkit-text-stroke: 0px transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Baseline Default Standby Setup Metrics fallback */
+        .display-number.idle-state {
+            font-family: 'JUA', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4.2rem);
+            color: var(--deep-safari-brown);
+            text-shadow: 0 4px 10px rgba(166, 124, 82, 0.2);
+            animation: slowPulse 2s infinite ease-in-out;
+        }
+
+        /* Active Running Display Text Colors */
+        .display-number.running-state {
+            background: linear-gradient(to bottom, var(--deep-safari-brown) 0%, #8D6E63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--warm-beige-glow));
+            animation: digitTickBounce 1s infinite ease-in-out;
+        }
+
+        /* Alarm Terminated Out Display text appearance colors */
+        .display-number.expired-state {
+            background: linear-gradient(to bottom, #FFFFFF 0%, #F5F5F5 40%, #E0E0E0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 30px #FFF9C4);
+            font-size: clamp(3.5rem, 10vw, 9rem);
+            animation: timeUpScalePulse 0.5s infinite alternate ease-in-out;
+        }
+
+        /* Floating Interactive Particle Overlay Element Layers styling */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.9;
+            z-index: 2500;
+        }
+
+        /* Animation System Framework Matrices */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        @keyframes digitTickBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02) translateY(-4px); filter: drop-shadow(0 8px 20px rgba(109,76,65,0.25)); }
+        }
+
+        @keyframes timeUpScalePulse {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.06); }
+        }
+
+        @keyframes slotPulseShake {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.005) rotate(0.1deg); }
+            75% { transform: scale(0.995) rotate(-0.1deg); }
+        }
+
+        @keyframes alarmStructuralShake {
+            0% { transform: translate(3px, 2px) rotate(0.5deg); }
+            100% { transform: translate(-3px, -2px) rotate(-0.5deg); }
+        }
+
+        /* Screen Sizing Proportional Configuration Metrics Responsiveness */
+        @media (max-width: 767px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+            }
+            .branding {
+                font-size: 0.95rem;
+            }
+            .nav-buttons {
+                justify-content: center;
+                width: 100%;
+            }
+            .controls-panel {
+                gap: 12px;
+                padding: 8px;
+            }
+            .time-input-group input {
+                width: 60px;
+                font-size: 1.1rem;
+                padding: 4px;
+            }
+            .step-btn {
+                padding: 2px 8px;
+                font-size: 1rem;
+            }
+            .input-separator {
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+            }
+            button, .btn {
+                font-size: 0.95rem;
+                padding: 6px 12px;
+            }
+            .large-selection-window {
+                height: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="branding">Made by:
+Mikee B. Gamboa
+"Teacher Mikee" F.E.T</div>
+        <div class="nav-buttons">
+            <div class="music-toggle-container">
+                <label for="chk-music">🎵 Music Loop</label>
+                <input type="checkbox" id="chk-music" checked onchange="toggleMusicStateChannel()">
+            </div>
+            <button id="btn-start" onclick="startCountdownTracker()">🎯 START TIMER</button>
+            <button id="btn-pause" onclick="pauseResumeTracker()" disabled>⏸ PAUSE</button>
+            <button id="btn-reset" onclick="resetCountdownTracker()">🔄 RESET TIMER</button>
+        </div>
+    </header>
+
+    <div class="controls-panel" id="input-controls-wrapper">
+        <div class="time-input-group">
+            <button class="btn step-btn" onclick="adjustTimeFieldValue('input-minutes', -1)">-</button>
+            <div class="time-field-wrapper">
+                <input type="number" id="input-minutes" value="05" min="0" max="999" placeholder="00" onchange="formatInputFieldPadding(this)">
+                <span>Mins</span>
+            </div>
+            <button class="btn step-btn" onclick="adjustTimeFieldValue('input-minutes', 1)">+</button>
+        </div>
+
+        <div class="input-separator">:</div>
+
+        <div class="time-input-group">
+            <button class="btn step-btn" onclick="adjustTimeFieldValue('input-seconds', -5)">-</button>
+            <div class="time-field-wrapper">
+                <input type="number" id="input-seconds" value="00" min="0" max="59" placeholder="00" onchange="validateSecondsBoundaries(this)">
+                <span>Secs</span>
+            </div>
+            <button class="btn step-btn" onclick="adjustTimeFieldValue('input-seconds', 5)">+</button>
+        </div>
+    </div>
+
+    <main>
+        <div id="main-timer-window" class="large-selection-window">
+            <div id="display-label" class="display-label"></div>
+            <div id="display-number" class="display-number idle-state">🦁<br>READY TO START TIMER</div>
+        </div>
+    </main>
+
+    <script>
+        // System Operation State Memory Tracker Parameters
+        let totalSecondsAllocated = 0;
+        let countdownTimerRef = null;
+        let appCurrentState = "idle"; // Tracking States: "idle", "running", "paused", "expired"
+        
+        // Web Audio Context Synthesizer Engine Nodes Storage References
+        let audioCtxInstance = null;
+        let synthMusicNodeRef = null;
+        let musicGainNodeRef = null;
+        let isMusicEnabled = true;
+        let alarmSynthIntervalRef = null;
+        let confettiAnimationIntervalRef = null;
+
+        // Initialization verification loop handler to prepare input strings cleanly
+        function formatInputFieldPadding(element) {
+            let parsedInt = parseInt(element.value) || 0;
+            if (parsedInt < 0) parsedInt = 0;
+            if (element.id === 'input-minutes' && parsedInt > 999) parsedInt = 999;
+            element.value = parsedInt.toString().padStart(2, '0');
+        }
+
+        function validateSecondsBoundaries(element) {
+            let parsedInt = parseInt(element.value) || 0;
+            if (parsedInt < 0) parsedInt = 0;
+            if (parsedInt > 59) parsedInt = 59;
+            element.value = parsedInt.toString().padStart(2, '0');
+        }
+
+        // Stepper increment decrement modifier controller logic
+        function adjustTimeFieldValue(fieldID, deltaAmount) {
+            if (appCurrentState === "running" || appCurrentState === "paused") return;
+            triggerClassroomAudioEffect('click_pop');
+            
+            const element = document.getElementById(fieldID);
+            let parsedValue = parseInt(element.value) || 0;
+            parsedValue += deltaAmount;
+
+            if (fieldID === 'input-seconds') {
+                if (parsedValue < 0) parsedValue = 0;
+                if (parsedValue > 59) parsedValue = 59;
+            } else {
+                if (parsedValue < 0) parsedValue = 0;
+                if (parsedValue > 999) parsedValue = 999;
+            }
+
+            element.value = parsedValue.toString().padStart(2, '0');
+        }
+
+        // Lazy initialization helper pattern for Web Audio Context Engine API layer
+        function verifyAudioContextInstantiation() {
+            if (!audioCtxInstance) {
+                audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtxInstance && audioCtxInstance.state === 'suspended') {
+                audioCtxInstance.resume();
+            }
+        }
+
+        // Classroom-Optimized Synth Audio SFX Pipeline
+        function triggerClassroomAudioEffect(presetKey) {
+            verifyAudioContextInstantiation();
+            if (!audioCtxInstance) return;
+
+            const timeNow = audioCtxInstance.currentTime;
+
+            if (presetKey === 'click_pop') {
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(420, timeNow);
+                osc.frequency.exponentialRampToValueAtTime(780, timeNow + 0.08);
+                
+                gain.gain.setValueAtTime(0.3, timeNow);
+                gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.08);
+                
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+                osc.start(timeNow);
+                osc.stop(timeNow + 0.08);
+            }
+            else if (presetKey === 'tick_wood') {
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, timeNow);
+                
+                gain.gain.setValueAtTime(0.15, timeNow);
+                gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.04);
+                
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+                osc.start(timeNow);
+                osc.stop(timeNow + 0.04);
+            }
+        }
+
+        // Playful Classroom Safari Background Music Loop Synth Engine Implementation
+        function startJungleMusicLoopTrack() {
+            if (!isMusicEnabled) return;
+            verifyAudioContextInstantiation();
+            if (!audioCtxInstance) return;
+
+            // Safe double kill clearance logic framework routine check
+            stopJungleMusicLoopTrack();
+
+            musicGainNodeRef = audioCtxInstance.createGain();
+            // Balanced back ambient sound amplitude profile to remain clean and non-distracting
+            musicGainNodeRef.gain.setValueAtTime(0.12, audioCtxInstance.currentTime);
+            musicGainNodeRef.connect(audioCtxInstance.destination);
+
+            const sampleRate = audioCtxInstance.sampleRate;
+            const sequenceDuration = 2.4; // Periodic beat cadence runtime length metrics
+            const bufferLen = sampleRate * sequenceDuration;
+            const compositionBuffer = audioCtxInstance.createBuffer(1, bufferLen, sampleRate);
+            const channelArray = compositionBuffer.getChannelData(0);
+
+            // Procedural note map coordinate definitions for standard major scale safari chords setup
+            const bassArrangement = [110.00, 138.59, 165.00, 220.00]; // A2, C#3, E3, A3 progression
+            const melodyArrangement = [440.00, 554.37, 659.25, 880.00]; // A4, C#5, E5, A5 progression
+
+            // Synthesis composition mathematical synthesis engine algorithm loops
+            for (let i = 0; i < bufferLen; i++) {
+                const currentTimeIndex = i / sampleRate;
+                
+                // Track rhythm division metrics sequence slots
+                const activeBeatIndex = Math.floor(currentTimeIndex * 3) % 4;
+                const noteTimeRemainder = currentTimeIndex % 0.33;
+
+                // Synthesize bass track profile frequencies arrays
+                const baseBassFreq = bassArrangement[activeBeatIndex];
+                let structuralWave = Math.sin(2 * Math.PI * baseBassFreq * currentTimeIndex);
+
+                // Add melody harmony tracks layering calculations
+                if (activeBeatIndex % 2 === 0) {
+                    const baseMelodyFreq = melodyArrangement[(activeBeatIndex + 1) % 4];
+                    structuralWave += 0.4 * Math.sin(2 * Math.PI * baseMelodyFreq * currentTimeIndex);
+                }
+
+                // Apply soft rhythmic amplitude envelope decay curves to individual notes
+                const noteEnvelope = Math.exp(-14 * noteTimeRemainder);
+                channelArray[i] = structuralWave * noteEnvelope;
+            }
+
+            synthMusicNodeRef = audioCtxInstance.createBufferSource();
+            synthMusicNodeRef.buffer = compositionBuffer;
+            synthMusicNodeRef.loop = true;
+            synthMusicNodeRef.connect(musicGainNodeRef);
+            synthMusicNodeRef.start();
+        }
+
+        function stopJungleMusicLoopTrack() {
+            if (synthMusicNodeRef) {
+                try {
+                    synthMusicNodeRef.stop();
+                } catch(e) {}
+                synthMusicNodeRef.disconnect();
+                synthMusicNodeRef = null;
+            }
+            if (musicGainNodeRef) {
+                musicGainNodeRef.disconnect();
+                musicGainNodeRef = null;
+            }
+        }
+
+        function toggleMusicStateChannel() {
+            isMusicEnabled = document.getElementById('chk-music').checked;
+            triggerClassroomAudioEffect('click_pop');
+            
+            if (appCurrentState === "running") {
+                if (isMusicEnabled) {
+                    startJungleMusicLoopTrack();
+                } else {
+                    stopJungleMusicLoopTrack();
+                }
+            }
+        }
+
+        // LOUD Multi-Harmonic Attention-Grabbing Classroom Alarm SFX Function Block
+        function executeClassroomAlarmPulseSequence() {
+            verifyAudioContextInstantiation();
+            if (!audioCtxInstance) return;
+
+            const timeNow = audioCtxInstance.currentTime;
+            // Playful yet attention grabbing chord setup (Dual major third chord triad nodes combination)
+            const alarmFrequencies = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 notes arrays
+
+            alarmFrequencies.forEach((freqValue, index) => {
+                const oscNode = audioCtxInstance.createOscillator();
+                const gainNode = audioCtxInstance.createGain();
+
+                oscNode.type = (index % 2 === 0) ? 'square' : 'triangle';
+                // Oscillate frequencies periodically to generate alert sound signatures
+                oscNode.frequency.setValueAtTime(freqValue, timeNow);
+                oscNode.frequency.linearRampToValueAtTime(freqValue * 1.08, timeNow + 0.12);
+                oscNode.frequency.linearRampToValueAtTime(freqValue * 0.95, timeNow + 0.25);
+
+                gainNode.gain.setValueAtTime(0.28, timeNow);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.38);
+
+                oscNode.connect(gainNode);
+                gainNode.connect(audioCtxInstance.destination);
+                oscNode.start(timeNow);
+                oscNode.stop(timeNow + 0.4);
+            });
+        }
+
+        // Convert input parameters into timestamp formats cleanly
+        function computeTimeFieldsToTotalSeconds() {
+            const minutesElementValue = parseInt(document.getElementById('input-minutes').value) || 0;
+            const secondsElementValue = parseInt(document.getElementById('input-seconds').value) || 0;
+            return (minutesElementValue * 60) + secondsElementValue;
+        }
+
+        // Main Visual Converter string text parser formatter output mapping framework
+        function renderTimestampString(totalSecondsDuration) {
+            const outputMins = Math.floor(totalSecondsDuration / 60);
+            const outputSecs = totalSecondsDuration % 60;
+            const formattedMins = outputMins.toString().padStart(2, '0');
+            const formattedSecs = outputSecs.toString().padStart(2, '0');
+            return `${formattedMins}:${formattedSecs}`;
+        }
+
+        // Core App Lifecycle Workflow Actions Trigger Handlers
+        function startCountdownTracker() {
+            if (appCurrentState === "running") return;
+
+            verifyAudioContextInstantiation();
+            triggerClassroomAudioEffect('click_pop');
+
+            if (appCurrentState === "idle") {
+                totalSecondsAllocated = computeTimeFieldsToTotalSeconds();
+                // Avoid launching operations if duration values evaluate to empty zero limits
+                if (totalSecondsAllocated <= 0) {
+                    alert("Please input a valid time duration length above 00:00!");
+                    return;
+                }
+            }
+
+            appCurrentState = "running";
+            
+            // Adjust panel visual display attributes
+            document.getElementById('input-controls-wrapper').classList.add('running-hidden');
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-pause').disabled = false;
+            document.getElementById('btn-pause').innerText = "⏸ PAUSE";
+
+            const windowEl = document.getElementById('main-timer-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+
+            windowEl.className = "large-selection-window timer-running";
+            labelEl.innerText = "COUNTDOWN RUNNING";
+            numEl.className = "display-number running-state";
+            numEl.innerText = renderTimestampString(totalSecondsAllocated);
+
+            // Initialize Background Audio tracks loop setup streams
+            startJungleMusicLoopTrack();
+
+            // Establish primary 1Hz system tick interval block loop
+            countdownTimerRef = setInterval(() => {
+                totalSecondsAllocated--;
+                numEl.innerText = renderTimestampString(totalSecondsAllocated);
+                triggerClassroomAudioEffect('tick_wood');
+
+                if (totalSecondsAllocated <= 0) {
+                    terminateTimerTimeOutAlarm();
+                }
+            }, 1000);
+        }
+
+        function pauseResumeTracker() {
+            if (appCurrentState === "expired" || appCurrentState === "idle") return;
+            triggerClassroomAudioEffect('click_pop');
+
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const pauseBtn = document.getElementById('btn-pause');
+
+            if (appCurrentState === "running") {
+                // Execute Suspension Routines Workflow Actions
+                appCurrentState = "paused";
+                if (countdownTimerRef) clearInterval(countdownTimerRef);
+                stopJungleMusicLoopTrack();
+                
+                pauseBtn.innerText = "▶ RESUME";
+                labelEl.innerText = "TIMER PAUSED";
+                numEl.style.animationPlayState = "paused";
+            } 
+            else if (appCurrentState === "paused") {
+                // Execute Resumption Routines Workflow Actions
+                appCurrentState = "running";
+                pauseBtn.innerText = "⏸ PAUSE";
+                labelEl.innerText = "COUNTDOWN RUNNING";
+                numEl.style.animationPlayState = "running";
+                
+                startJungleMusicLoopTrack();
+
+                countdownTimerRef = setInterval(() => {
+                    totalSecondsAllocated--;
+                    numEl.innerText = renderTimestampString(totalSecondsAllocated);
+                    triggerClassroomAudioEffect('tick_wood');
+
+                    if (totalSecondsAllocated <= 0) {
+                        terminateTimerTimeOutAlarm();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetCountdownTracker() {
+            // Disengage background systems entirely
+            if (countdownTimerRef) clearInterval(countdownTimerRef);
+            if (alarmSynthIntervalRef) clearInterval(alarmSynthIntervalRef);
+            if (confettiAnimationIntervalRef) clearInterval(confettiAnimationIntervalRef);
+            
+            stopJungleMusicLoopTrack();
+            appCurrentState = "idle";
+
+            triggerClassroomAudioEffect('click_pop');
+
+            // Restore element structure modifications back to standard baseline parameters
+            document.body.className = "";
+            document.getElementById('input-controls-wrapper').classList.remove('running-hidden');
+            
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-pause').disabled = true;
+            document.getElementById('btn-pause').innerText = "⏸ PAUSE";
+
+            const windowEl = document.getElementById('main-timer-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+
+            windowEl.className = "large-selection-window";
+            labelEl.innerText = "";
+            numEl.className = "display-number idle-state";
+            numEl.style.animationPlayState = "running";
+            numEl.innerHTML = "🦁<br>READY TO START TIMER";
+        }
+
+        // Terminated Final Completion Routine Handler Engine
+        function terminateTimerTimeOutAlarm() {
+            if (countdownTimerRef) clearInterval(countdownTimerRef);
+            stopJungleMusicLoopTrack();
+            appCurrentState = "expired";
+
+            document.getElementById('btn-pause').disabled = true;
+
+            const windowEl = document.getElementById('main-timer-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+
+            windowEl.className = "large-selection-window timer-expired";
+            labelEl.innerText = "⚡ TIME'S UP! ⚡";
+            numEl.className = "display-number expired-state";
+            numEl.innerText = "00:00";
+
+            // Instantly execute alert audio generation cycles
+            executeClassroomAlarmPulseSequence();
+            alarmSynthIntervalRef = setInterval(executeClassroomAlarmPulseSequence, 900);
+
+            // Establish visual background body flash matrix rhythm changes
+            let flashStateToggle = false;
+            const bodyNode = document.body;
+            
+            const localFlashTimerRef = setInterval(() => {
+                if (appCurrentState !== "expired") {
+                    clearInterval(localFlashTimerRef);
+                    bodyNode.className = "";
+                    return;
+                }
+                flashStateToggle = !flashStateToggle;
+                if (flashStateToggle) {
+                    bodyNode.classList.add('alarm-flash-active');
+                } else {
+                    bodyNode.classList.remove('alarm-flash-active');
+                }
+            }, 250);
+
+            // Execute automated confetti explosion tracking generation loops
+            const rect = numEl.getBoundingClientRect();
+            const posX = rect.left + rect.width / 2;
+            const posY = rect.top + rect.height / 2;
+
+            executeJungleExplosionConfetti(posX, posY);
+            confettiAnimationIntervalRef = setInterval(() => {
+                executeJungleExplosionConfetti(posX, posY);
+            }, 700);
+        }
+
+        // Visual Celebration Explosion Particles Generator Component
+        function executeJungleExplosionConfetti(originX, originY) {
+            const vividPaletteColors = ['#FFD166', '#06D6A0', '#118AB2', '#FF6B6B', '#8338EC', '#FB8500', '#4CAF50'];
+            const totalEmissions = 35;
+
+            // Generate particles dispersed evenly across visual vectors coordinates
+            for (let i = 0; i < totalEmissions; i++) {
+                const particleNode = document.createElement('div');
+                particleNode.className = 'particle';
+                
+                const selectStar = Math.random() > 0.45;
+                if (selectStar) {
+                    particleNode.innerText = Math.random() > 0.5 ? "⭐" : "🌿";
+                    particleNode.style.fontSize = `${Math.random() * 15 + 16}px`;
+                } else {
+                    particleNode.style.width = `${Math.random() * 12 + 6}px`;
+                    particleNode.style.height = `${Math.random() * 12 + 6}px`;
+                    particleNode.style.backgroundColor = vividPaletteColors[Math.floor(Math.random() * vividPaletteColors.length)];
+                    particleNode.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                }
+
+                // Center coordinates alignments setups
+                const offsetScatterX = (Math.random() * 80) - 40;
+                const offsetScatterY = (Math.random() * 40) - 20;
+                particleNode.style.left = `${originX + offsetScatterX}px`;
+                particleNode.style.top = `${originY + offsetScatterY}px`;
+
+                const trajectoryAngle = Math.random() * Math.PI * 2;
+                const forceSpeedVelocity = Math.random() * 260 + 80;
+                const destinationDeltaX = Math.cos(trajectoryAngle) * forceSpeedVelocity;
+                const destinationDeltaY = Math.sin(trajectoryAngle) * forceSpeedVelocity - 30;
+
+                particleNode.animate([
+                    { transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${destinationDeltaX}px, ${destinationDeltaY}px) rotate(${Math.random() * 360}deg) scale(0.3)`, opacity: 0 }
+                ], {
+                    duration: 1500,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+
+                document.body.appendChild(particleNode);
+                setTimeout(() => particleNode.remove(), 1500);
+            }
+        }
+    </script>
+</body>
+</html>

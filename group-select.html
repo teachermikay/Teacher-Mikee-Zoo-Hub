@@ -1,0 +1,949 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🦁 Zoo Safari Group Order Randomizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chango&family=JUA&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables & Theme Palette */
+        :root {
+            --pastel-brown: #A67C52;
+            --pastel-yellow: #FFF3CD;
+            --pastel-green: #D4EDDA;
+            --warm-cream: #FDFBF7;
+            --soft-orange: #FFE0B2;
+            --text-brown: #5C3A21;
+            --white: #FFFFFF;
+            --muted-gray: #BDC3C7;
+            --accent-red: #FF6B6B;
+
+            /* Enhanced Safari Accents */
+            --safari-orange: #FFB74D;
+            --safari-box-cream: #FFF8E1;
+            --safari-box-yellow: #FFE082;
+            --deep-safari-brown: #6D4C41;
+            --soft-cream-white: #FFF3E0;
+            --warm-beige-glow: #F5E6C8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Full Viewport App Constraints */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Compact Header Component Layout */
+        header {
+            background-color: var(--pastel-brown);
+            color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+
+        .branding {
+            font-size: 1.1rem;
+            line-height: 1.3;
+            white-space: pre-line;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Themed Safari Buttons Framework */
+        button, .btn {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            border: 3px solid var(--pastel-brown);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 0 var(--pastel-brown);
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--soft-orange);
+            transform: translateY(-2px);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--pastel-brown);
+        }
+
+        /* Special High Visibility Main Anchor Button */
+        button#btn-choose-group {
+            background-color: var(--pastel-yellow);
+            border: 4px solid var(--text-brown);
+            padding: 12px 24px;
+            font-size: 1.4rem;
+            border-radius: 25px;
+            box-shadow: 0 6px 0 var(--text-brown);
+            font-weight: bold;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        button#btn-choose-group:hover {
+            background-color: var(--soft-orange);
+            transform: scale(1.04) translateY(-2px);
+        }
+
+        button#btn-choose-group:active {
+            transform: scale(0.98) translateY(4px);
+            box-shadow: 0 2px 0 var(--text-brown);
+        }
+
+        button#btn-choose-group:disabled {
+            background-color: var(--muted-gray);
+            border-color: #7F8C8D;
+            box-shadow: 0 4px 0 #7F8C8D;
+            color: #7F8C8D;
+            cursor: not-allowed;
+            animation: none;
+            transform: none;
+        }
+
+        /* Group Configuration Interactive Control Sub-Panel */
+        .controls-panel {
+            background-color: var(--pastel-yellow);
+            border: 3px dashed var(--pastel-brown);
+            border-radius: 15px;
+            padding: 8px 20px;
+            margin: 10px auto;
+            width: 92%;
+            max-width: 650px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .control-group input {
+            font-family: 'JUA', sans-serif;
+            width: 75px;
+            padding: 6px;
+            font-size: 1.2rem;
+            border: 2px solid var(--pastel-brown);
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+            background-color: var(--white);
+        }
+
+        .step-btn {
+            padding: 4px 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .pool-status {
+            font-size: 1.1rem;
+            background: rgba(166, 124, 82, 0.15);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Centralized Stage Workspace */
+        main {
+            flex: 1;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* GIANT SAFARI DISPLAY FOCUS BOX CONTAINER */
+        .large-selection-window {
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.95) 0%, rgba(255, 224, 130, 0.95) 100%);
+            border: 8px solid var(--pastel-brown);
+            border-radius: 45px;
+            width: 100%;
+            max-width: 850px;
+            height: 90%;
+            max-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                inset 0 0 35px rgba(255, 213, 79, 0.45), 
+                0 16px 0 var(--pastel-brown),
+                0 0 30px rgba(165, 214, 167, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Safari Presentational Decorative Frame Accents */
+        .large-selection-window::before {
+            content: "🐾";
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            font-size: 2.2rem;
+            opacity: 0.35;
+        }
+
+        .large-selection-window::after {
+            content: "🌴";
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            font-size: 2.4rem;
+            opacity: 0.35;
+        }
+
+        /* Rolling Screen Shake Modification Modality */
+        .large-selection-window.rolling-active {
+            animation: slotShake 0.12s infinite alternate;
+            border-color: var(--safari-orange);
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.96) 0%, rgba(255, 183, 77, 0.96) 100%);
+            box-shadow: 
+                inset 0 0 50px rgba(255, 183, 77, 0.55), 
+                0 16px 0 var(--safari-orange),
+                0 0 40px rgba(255, 183, 77, 0.4);
+        }
+
+        /* Chosen Target Success Frame Modality */
+        .large-selection-window.winner-active {
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.96) 0%, rgba(212, 237, 218, 0.96) 100%);
+            border-color: #82af91;
+            box-shadow: 
+                inset 0 0 45px rgba(165, 214, 167, 0.6), 
+                0 16px 0 #82af91,
+                0 0 45px rgba(165, 214, 167, 0.5);
+            animation: winnerBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+
+        /* Subtext Header Element Context */
+        .display-label {
+            font-size: min(2.5rem, 5vh);
+            color: var(--text-brown);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* MASSIVE NUMBER CHANGO DISPLAY DESIGN WITH NO STROKES/OUTLINES */
+        .display-number {
+            font-family: 'Chango', sans-serif; /* Applied exclusively to the giant group number */
+            font-size: var(--num-size, 9rem);
+            font-weight: normal;
+            line-height: 1.1;
+            padding: 10px;
+            margin: 10px 0;
+            
+            /* Enforced Clean Flat Configuration Rules */
+            -webkit-text-stroke: 0px transparent;
+            border: none;
+        }
+
+        /* Empty/Idle State Formatting */
+        .display-number.idle-state {
+            font-family: 'JUA', sans-serif; /* Soft exception fallback formatting only for prompt words */
+            font-size: clamp(2.5rem, 6vh, 4.5rem);
+            color: var(--deep-safari-brown);
+            text-shadow: 0 4px 10px rgba(166, 124, 82, 0.2);
+            animation: slowPulse 2s infinite ease-in-out;
+        }
+
+        /* Rolling State Style Mode */
+        .display-number.rolling-state {
+            background: linear-gradient(to bottom, var(--deep-safari-brown) 0%, #8D6E63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--warm-beige-glow));
+            animation: rapidBounce 0.15s infinite alternate ease-in-out;
+        }
+
+        /* Winner Active Mode Presentation - Flat, Distinct Gradient with Soft Warm Ambient Glow */
+        .display-number.winner-state {
+            background: linear-gradient(to bottom, #8D6E63 0%, var(--deep-safari-brown) 50%, #4E342E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* Soft Ambient Glow Integration Only (No lines or strokes) */
+            filter: drop-shadow(0 6px 14px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 25px var(--warm-beige-glow));
+            animation: safariGlowPulse 4s infinite ease-in-out;
+        }
+
+        /* Selection History Footer Log Track */
+        .history-footnote {
+            font-size: min(1.3rem, 3.5vh);
+            font-weight: bold;
+            margin-top: 15px;
+            color: var(--deep-safari-brown);
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 6px 18px;
+            border-radius: 15px;
+            max-width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Safari-Themed Modal Overlay Panel System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(92, 58, 33, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 5000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .safari-modal {
+            background: linear-gradient(135deg, var(--warm-cream) 0%, var(--safari-box-cream) 100%);
+            border: 6px solid var(--pastel-brown);
+            border-radius: 35px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 16px 0 var(--pastel-brown), 0 10px 30px rgba(0,0,0,0.15);
+            transform: translateY(-40px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .modal-overlay.active .safari-modal {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 2.3rem;
+            color: var(--deep-safari-brown);
+            margin-bottom: 12px;
+        }
+
+        .modal-desc {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            color: var(--text-brown);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Particles Layer Base Overlay styling */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.9;
+            z-index: 2500;
+        }
+
+        /* Animation System Cycles */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        @keyframes rapidBounce {
+            0% { transform: scale(0.92) translateY(5px); }
+            100% { transform: scale(1.05) translateY(-5px); }
+        }
+
+        @keyframes safariGlowPulse {
+            0%, 100% { filter: drop-shadow(0 6px 14px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 25px var(--warm-beige-glow)); }
+            50% { filter: drop-shadow(0 6px 14px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 35px #FFF9C4); }
+        }
+
+        @keyframes slotShake {
+            0% { transform: translate(2px, 3px) rotate(0deg); }
+            100% { transform: translate(-2px, -3px) rotate(-0.5deg); }
+        }
+
+        @keyframes winnerBounce {
+            0% { transform: scale(0.3); }
+            65% { transform: scale(1.08); }
+            85% { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+
+        /* Screen Sizing Proportional Configuration Metrics */
+        @media (min-width: 1200px) {
+            :root { --num-size: clamp(180px, 28vh, 320px); }
+        }
+        @media (max-width: 1199px) and (min-width: 768px) {
+            :root { --num-size: clamp(120px, 22vh, 220px); }
+        }
+        @media (max-width: 767px) {
+            :root { --num-size: clamp(80px, 16vh, 140px); }
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+            }
+            .nav-buttons {
+                justify-content: center;
+                width: 100%;
+            }
+            .controls-panel {
+                gap: 12px;
+                padding: 8px;
+            }
+            button, .btn {
+                font-size: 0.95rem;
+                padding: 6px 12px;
+            }
+            button#btn-choose-group {
+                font-size: 1.1rem;
+                padding: 8px 16px;
+            }
+            .large-selection-window {
+                height: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="branding">Made by:
+Mikee B. Gamboa
+"Teacher Mikee" F.E.T</div>
+        <div class="nav-buttons">
+            <button id="btn-choose-group" onclick="rollSafariGroupDraw()">🎯 CHOOSE GROUP</button>
+            <button id="btn-reset" onclick="resetOrderPoolState()">🔄 Reset Draw</button>
+        </div>
+    </header>
+
+    <div class="controls-panel">
+        <div class="control-group">
+            <label>Number of Groups:</label>
+            <button id="btn-minus" class="btn step-btn" onclick="adjustGroupCountField(-1)">-</button>
+            <input type="number" id="input-group-count" value="4" min="2" max="50" onchange="validateParametersState()">
+            <button id="btn-plus" class="btn step-btn" onclick="adjustGroupCountField(1)">+</button>
+        </div>
+        <div class="pool-status" id="txt-remaining-counter">
+            Remaining Pool: 4 / 4
+        </div>
+    </div>
+
+    <main>
+        <div id="main-display-window" class="large-selection-window">
+            <div id="display-label" class="display-label"></div>
+            <div id="display-number" class="display-number idle-state">🦁<br>READY TO DRAW?</div>
+            <div id="display-history-footnote" class="history-footnote" style="display: none;">Order: None</div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="window-complete-modal">
+        <div class="safari-modal">
+            <div class="modal-title">🦁 DRAW COMPLETE!</div>
+            <div class="modal-desc">All available groups have been assigned an order sequence.<br>Would you like to draw again?</div>
+            <div class="modal-actions">
+                <button id="btn-modal-again" class="btn" style="background-color: var(--pastel-green); font-weight: bold;" onclick="confirmDrawAgainCycle()">✅ DRAW AGAIN</button>
+                <button id="btn-modal-close" class="btn" style="background-color: var(--soft-orange);" onclick="closeCompleteModal()">❌ CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Core App System State Tracking Storage Metrics
+        let totalConfiguredGroups = 4;
+        let remainingGroupPool = [1, 2, 3, 4];
+        let finalizedSelectionSequence = [];
+        
+        // Strict State Machine Control Variables
+        let isDrawing = false;
+        let animationIntervalPointer = null;
+        let stagePhaseTwoTimer = null;
+        let stagePhaseThreeTimer = null;
+        let emergencyFailsafeTimer = null;
+        
+        let audioCtxInstance = null;
+
+        // Custom Ordinal Notation Label Mapper Tool
+        const sequenceOrderStrings = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+        function fetchSequenceLabel(indexPosition) {
+            if (indexPosition < sequenceOrderStrings.length) {
+                return sequenceOrderStrings[indexPosition];
+            }
+            return `${indexPosition + 1}th`;
+        }
+
+        // Web Audio Context Instantiation Framework Verification Handler
+        function verifyAudioContextStatus() {
+            if (!audioCtxInstance) {
+                audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Louder High-Fidelity Classroom-Optimized Audio FX Generation Pipeline
+        function triggerClassroomAudioEffect(presetKey, modulationRatio = 0) {
+            verifyAudioContextStatus();
+            if (!audioCtxInstance) return;
+            if (audioCtxInstance.state === 'suspended') audioCtxInstance.resume();
+
+            const timeNow = audioCtxInstance.currentTime;
+
+            if (presetKey === 'click_pop') {
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(380, timeNow);
+                osc.frequency.exponentialRampToValueAtTime(700, timeNow + 0.09);
+                
+                gain.gain.setValueAtTime(0.5, timeNow);
+                gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.09);
+                
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+                osc.start(timeNow);
+                osc.stop(timeNow + 0.09);
+            } 
+            else if (presetKey === 'drum_roll') {
+                const bufferLen = audioCtxInstance.sampleRate * 0.12;
+                const buffer = audioCtxInstance.createBuffer(1, bufferLen, audioCtxInstance.sampleRate);
+                const rawChannelData = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferLen; i++) {
+                    rawChannelData[i] = Math.random() * 2 - 1;
+                }
+                
+                const bufferSourceNode = audioCtxInstance.createBufferSource();
+                bufferSourceNode.buffer = buffer;
+
+                const resonantFilter = audioCtxInstance.createBiquadFilter();
+                resonantFilter.type = 'lowpass';
+                resonantFilter.frequency.setValueAtTime(140 + (modulationRatio * 220), timeNow);
+
+                const gain = audioCtxInstance.createGain();
+                gain.gain.setValueAtTime(0.65, timeNow);
+                gain.gain.exponentialRampToValueAtTime(0.01, timeNow + 0.11);
+
+                bufferSourceNode.connect(resonantFilter);
+                resonantFilter.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+                bufferSourceNode.start(timeNow);
+            } 
+            else if (presetKey === 'reveal_popper') {
+                const chimeFrequencies = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                
+                const noiseBufferLen = audioCtxInstance.sampleRate * 0.4;
+                const noiseBuffer = audioCtxInstance.createBuffer(1, noiseBufferLen, audioCtxInstance.sampleRate);
+                const noiseData = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < noiseBufferLen; i++) {
+                    noiseData[i] = Math.random() * 2 - 1;
+                }
+                
+                const noiseSource = audioCtxInstance.createBufferSource();
+                noiseSource.buffer = noiseBuffer;
+                
+                const noiseFilter = audioCtxInstance.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(450, timeNow);
+                
+                const noiseGain = audioCtxInstance.createGain();
+                noiseGain.gain.setValueAtTime(0.9, timeNow); 
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.35);
+                
+                noiseSource.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(audioCtxInstance.destination);
+                noiseSource.start(timeNow);
+
+                chimeFrequencies.forEach((freq, index) => {
+                    const osc = audioCtxInstance.createOscillator();
+                    const gain = audioCtxInstance.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, timeNow + (index * 0.04));
+                    osc.frequency.exponentialRampToValueAtTime(freq * 1.2, timeNow + (index * 0.04) + 0.3);
+                    
+                    gain.gain.setValueAtTime(0.45, timeNow + (index * 0.04));
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + (index * 0.04) + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtxInstance.destination);
+                    osc.start(timeNow + (index * 0.04));
+                    osc.stop(timeNow + (index * 0.04) + 0.35);
+                });
+            }
+            else if (presetKey === 'reset_clean') {
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, timeNow);
+                osc.frequency.linearRampToValueAtTime(220, timeNow + 0.15);
+                gain.gain.setValueAtTime(0.4, timeNow);
+                gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.15);
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+                osc.start(timeNow);
+                osc.stop(timeNow + 0.15);
+            }
+        }
+
+        // Global State Cleanup Engine (Clears all loops/intervals completely)
+        function clearAllActiveTimers() {
+            if (animationIntervalPointer) {
+                clearInterval(animationIntervalPointer);
+                animationIntervalPointer = null;
+            }
+            if (stagePhaseTwoTimer) {
+                clearTimeout(stagePhaseTwoTimer);
+                stagePhaseTwoTimer = null;
+            }
+            if (stagePhaseThreeTimer) {
+                clearTimeout(stagePhaseThreeTimer);
+                stagePhaseThreeTimer = null;
+            }
+            if (emergencyFailsafeTimer) {
+                clearTimeout(emergencyFailsafeTimer);
+                emergencyFailsafeTimer = null;
+            }
+        }
+
+        // Helper Framework to toggle interactive accessibility buttons smoothly
+        function setInterfaceButtonsState(disableState) {
+            document.getElementById('btn-choose-group').disabled = disableState;
+            document.getElementById('btn-reset').disabled = disableState;
+            document.getElementById('btn-minus').disabled = disableState;
+            document.getElementById('btn-plus').disabled = disableState;
+            document.getElementById('input-group-count').disabled = disableState;
+        }
+
+        // Interface Control Field Step Increment Handlers
+        function adjustGroupCountField(delta) {
+            if (isDrawing) return;
+            triggerClassroomAudioEffect('click_pop');
+            const targetField = document.getElementById('input-group-count');
+            let parsedInt = parseInt(targetField.value) || 4;
+            parsedInt += delta;
+            targetField.value = parsedInt;
+            validateParametersState();
+        }
+
+        // Sanity Check Bounds Synchronization Verification Logic Loop
+        function validateParametersState() {
+            if (isDrawing) return;
+            
+            const targetField = document.getElementById('input-group-count');
+            let parsedValue = parseInt(targetField.value);
+
+            if (isNaN(parsedValue) || parsedValue < 2) parsedValue = 2;
+            if (parsedValue > 50) parsedValue = 50;
+
+            targetField.value = parsedValue;
+            totalConfiguredGroups = parsedValue;
+
+            remainingGroupPool = [];
+            for (let i = 1; i <= totalConfiguredGroups; i++) {
+                remainingGroupPool.push(i);
+            }
+            finalizedSelectionSequence = [];
+
+            document.getElementById('txt-remaining-counter').innerText = `Remaining Pool: ${remainingGroupPool.length} / ${totalConfiguredGroups}`;
+            
+            const windowEl = document.getElementById('main-display-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footnoteEl = document.getElementById('display-history-footnote');
+
+            windowEl.className = "large-selection-window";
+            labelEl.innerText = "";
+            numEl.className = "display-number idle-state";
+            numEl.innerHTML = "🦁<br>READY TO DRAW?";
+            footnoteEl.style.display = "none";
+            footnoteEl.innerText = "Order: None";
+            
+            setInterfaceButtonsState(false);
+        }
+
+        // Paced Dynamic Multi-Phase Rolling Animation Runner Implementation
+        function runRollingIntervalEngine(tickSpeedMS, selectedWinnerID) {
+            if (animationIntervalPointer) clearInterval(animationIntervalPointer);
+
+            const numEl = document.getElementById('display-number');
+            
+            // Build temporary roll sequence choices excluding the verified final winner
+            let fallbackSelectionPool = remainingGroupPool.filter(g => g !== selectedWinnerID);
+            if (fallbackSelectionPool.length === 0) {
+                // Standby fallback array context setup if drawing the absolute final group item remaining
+                for (let idx = 1; idx <= totalConfiguredGroups; idx++) {
+                    fallbackSelectionPool.push(idx);
+                }
+            }
+
+            let tickCounter = 0;
+            animationIntervalPointer = setInterval(() => {
+                tickCounter++;
+                const dynamicMockID = fallbackSelectionPool[Math.floor(Math.random() * fallbackSelectionPool.length)];
+                numEl.innerText = dynamicMockID;
+                
+                // Sound synthesis pulse tracking values
+                const currentToneRatio = Math.min(1, tickCounter / 15);
+                triggerClassroomAudioEffect('drum_roll', currentToneRatio);
+            }, tickSpeedMS);
+        }
+
+        // Non-Repeating Randomizer Draw Core Logic Controller with Restored Game-Show Experience
+        function rollSafariGroupDraw() {
+            // Strict State Machine Guard Verification Rule Checklist
+            if (isDrawing || remainingGroupPool.length === 0) return;
+            isDrawing = true;
+
+            // Lock interactive interface mechanisms immediately
+            setInterfaceButtonsState(true);
+            clearAllActiveTimers();
+
+            // STEP 1: Select final group number IMMEDIATELY in hidden memory
+            const chosenTargetPoolIndex = Math.floor(Math.random() * remainingGroupPool.length);
+            const absoluteWinnerGroup = remainingGroupPool[chosenTargetPoolIndex];
+
+            const windowEl = document.getElementById('main-display-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            
+            // Activate active presentation stage layout attributes
+            windowEl.className = "large-selection-window rolling-active";
+            labelEl.innerText = "DRAWING...";
+            numEl.className = "display-number rolling-state";
+
+            // PHASE 1: Fast rolling phase launch initialization (Updates rapidly every 50ms)
+            runRollingIntervalEngine(50, absoluteWinnerGroup);
+
+            // PHASE 2: Transition into cinematic deceleration phase layout curve (At 1.5 seconds mark)
+            stagePhaseTwoTimer = setTimeout(() => {
+                if (isDrawing) {
+                    runRollingIntervalEngine(110, absoluteWinnerGroup);
+                }
+            }, 1500);
+
+            // PHASE 3: Absolute final timeline termination milestone action point reveal (At 2.5 seconds mark)
+            stagePhaseThreeTimer = setTimeout(() => {
+                showFinalizedWinner(absoluteWinnerGroup, chosenTargetPoolIndex);
+            }, 2500);
+
+            // EMERGENCY PROTECTION FAILSAFE RECOVERY TIMER: Hard stops lockups under any anomaly context
+            emergencyFailsafeTimer = setTimeout(() => {
+                if (isDrawing) {
+                    showFinalizedWinner(absoluteWinnerGroup, chosenTargetPoolIndex);
+                }
+            }, 4000);
+        }
+
+        // Show Finalized Winner Display State Engine Function Block
+        function showFinalizedWinner(winnerID, targetIndexToRemove) {
+            // Instantly clear out running intervals and loop routines
+            clearAllActiveTimers();
+
+            // Safety crosscheck validation to secure arrays against race-condition collisions
+            if (remainingGroupPool.includes(winnerID)) {
+                remainingGroupPool.splice(targetIndexToRemove, 1);
+                finalizedSelectionSequence.push(winnerID);
+            }
+
+            const windowEl = document.getElementById('main-display-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footnoteEl = document.getElementById('display-history-footnote');
+
+            const activeDrawRankOrdinal = fetchSequenceLabel(finalizedSelectionSequence.length - 1);
+
+            // Transition layout into winner active success visualization
+            windowEl.className = "large-selection-window winner-active";
+            labelEl.innerText = `${activeDrawRankOrdinal} CHOICE`;
+            
+            numEl.className = "display-number winner-state";
+            numEl.innerText = winnerID;
+
+            // Generate/Update History Sequence Trailing String Label Log track
+            footnoteEl.innerText = "Order: " + finalizedSelectionSequence.map(grp => `G${grp}`).join(" ➔ ");
+            footnoteEl.style.display = "block";
+
+            // Trigger structural rendering coordinates particle blast point vectors
+            const rect = numEl.getBoundingClientRect();
+            const burstX = rect.left + rect.width / 2;
+            const burstY = rect.top + rect.height / 2;
+            
+            executeJungleExplosionConfetti(burstX, burstY);
+            triggerClassroomAudioEffect('reveal_popper');
+
+            document.getElementById('txt-remaining-counter').innerText = `Remaining Pool: ${remainingGroupPool.length} / ${totalConfiguredGroups}`;
+            
+            // Unlock system block tracking properties
+            isDrawing = false;
+
+            // Evaluate if global resource pool allocation matrix has depleted fully
+            if (remainingGroupPool.length === 0) {
+                setTimeout(() => {
+                    document.getElementById('window-complete-modal').classList.add('active');
+                }, 1200);
+            } else {
+                // Safely restore user interface controls back to normal execution status
+                setInterfaceButtonsState(false);
+            }
+        }
+
+        // Visual Celebration Explosion Particles Generator Component
+        function executeJungleExplosionConfetti(originX, originY) {
+            const vividPaletteColors = ['#FFD166', '#06D6A0', '#118AB2', '#FF6B6B', '#8338EC', '#FB8500', '#4CAF50'];
+            const totalEmissions = 40;
+
+            for (let i = 0; i < totalEmissions; i++) {
+                const particleNode = document.createElement('div');
+                particleNode.className = 'particle';
+                
+                const selectStar = Math.random() > 0.45;
+                if (selectStar) {
+                    particleNode.innerText = Math.random() > 0.5 ? "⭐" : "🌿";
+                    particleNode.style.fontSize = `${Math.random() * 15 + 16}px`;
+                } else {
+                    particleNode.style.width = `${Math.random() * 12 + 6}px`;
+                    particleNode.style.height = `${Math.random() * 12 + 6}px`;
+                    particleNode.style.backgroundColor = vividPaletteColors[Math.floor(Math.random() * vividPaletteColors.length)];
+                    particleNode.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                }
+
+                particleNode.style.left = `${originX}px`;
+                particleNode.style.top = `${originY}px`;
+
+                const trajectoryAngle = Math.random() * Math.PI * 2;
+                const forceSpeedVelocity = Math.random() * 220 + 90;
+                const destinationDeltaX = Math.cos(trajectoryAngle) * forceSpeedVelocity;
+                const destinationDeltaY = Math.sin(trajectoryAngle) * forceSpeedVelocity - 40;
+
+                particleNode.animate([
+                    { transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${destinationDeltaX}px, ${destinationDeltaY}px) rotate(${Math.random() * 360}deg) scale(0.3)`, opacity: 0 }
+                ], {
+                    duration: 1600,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+
+                document.body.appendChild(particleNode);
+                setTimeout(() => particleNode.remove(), 1600);
+            }
+        }
+
+        // Draw Again Routine Fix (Restores full group lists and cleans panel display variables cleanly)
+        function confirmDrawAgainCycle() {
+            closeCompleteModal();
+            clearAllActiveTimers();
+            isDrawing = false;
+
+            remainingGroupPool = [];
+            for (let i = 1; i <= totalConfiguredGroups; i++) {
+                remainingGroupPool.push(i);
+            }
+            finalizedSelectionSequence = [];
+
+            document.getElementById('txt-remaining-counter').innerText = `Remaining Pool: ${remainingGroupPool.length} / ${totalConfiguredGroups}`;
+            
+            const windowEl = document.getElementById('main-display-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footnoteEl = document.getElementById('display-history-footnote');
+
+            windowEl.className = "large-selection-window";
+            labelEl.innerText = "";
+            numEl.className = "display-number idle-state";
+            numEl.innerHTML = "🦁<br>READY TO DRAW?";
+            footnoteEl.style.display = "none";
+            footnoteEl.innerText = "Order: None";
+
+            setInterfaceButtonsState(false);
+            triggerClassroomAudioEffect('click_pop');
+        }
+
+        // Modal Close Action Control Fix
+        function closeCompleteModal() {
+            triggerClassroomAudioEffect('click_pop');
+            document.getElementById('window-complete-modal').classList.remove('active');
+            setInterfaceButtonsState(false);
+        }
+
+        // Reset Engine Routine Fix (Guarantees complete state clearance back to baseline profiles)
+        function resetOrderPoolState() {
+            clearAllActiveTimers();
+            isDrawing = false;
+            triggerClassroomAudioEffect('reset_clean');
+            validateParametersState();
+        }
+
+        // Framework Initialization Loop Trigger
+        validateParametersState();
+    </script>
+</body>
+</html>

@@ -1,0 +1,872 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zoo Safari Reward System</title>
+    <link href="https://fonts.googleapis.com/css2?family=JUA&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables & Theme Palette */
+        :root {
+            --pastel-brown: #A67C52;
+            --pastel-yellow: #FFF3CD;
+            --pastel-green: #D4EDDA;
+            --warm-cream: #FDFBF7;
+            --soft-orange: #FFE0B2;
+            --text-brown: #5C3A21;
+            --white: #FFFFFF;
+            --accent-red: #FF6B6B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Full Screen No-Scroll Configuration */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Layout */
+        header {
+            background-color: var(--pastel-brown);
+            color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+
+        .branding {
+            font-size: 1.1rem;
+            line-height: 1.3;
+            white-space: pre-line;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Modern Cute Buttons */
+        button, .btn {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            border: 3px solid var(--pastel-brown);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 0 var(--pastel-brown);
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--soft-orange);
+            transform: translateY(-2px);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--pastel-brown);
+        }
+
+        /* Smartboard Optimized Random Button */
+        button#btn-random-reward {
+            background-color: var(--pastel-yellow);
+            border: 4px solid var(--text-brown);
+            padding: 12px 24px;
+            font-size: 1.4rem;
+            border-radius: 25px;
+            box-shadow: 0 6px 0 var(--text-brown);
+            font-weight: bold;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        button#btn-random-reward:hover {
+            background-color: var(--soft-orange);
+            transform: scale(1.05) translateY(-2px);
+        }
+
+        button#btn-random-reward:active {
+            transform: scale(0.98) translateY(4px);
+            box-shadow: 0 2px 0 var(--text-brown);
+        }
+
+        button#music-btn.music-on {
+            background-color: var(--pastel-green);
+            border-color: #28a745;
+            box-shadow: 0 4px 0 #28a745;
+        }
+
+        /* Teacher Settings Panel */
+        .settings-panel {
+            background-color: var(--pastel-yellow);
+            border: 3px dashed var(--pastel-brown);
+            border-radius: 15px;
+            padding: 10px 20px;
+            margin: 10px auto;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .setting-group input {
+            font-family: 'JUA', sans-serif;
+            width: 70px;
+            padding: 5px 10px;
+            font-size: 1.2rem;
+            border: 2px solid var(--pastel-brown);
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            background-color: var(--white);
+        }
+
+        /* Dynamically Calibrated Main Board Container */
+        main {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Highly Optimized Dynamic Auto-Scaling Layout */
+        .animal-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-cols, 6), minmax(0, 1fr));
+            grid-template-rows: repeat(var(--grid-rows, 4), minmax(0, 1fr));
+            gap: var(--grid-gap, 2vmin);
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            max-height: 80vh;
+            margin: auto;
+            justify-content: center;
+            align-content: center;
+        }
+
+        /* Dynamically Fluid Responsive Grid Cards */
+        .animal-card {
+            background-color: var(--pastel-green);
+            border: 3px solid #82af91;
+            border-radius: min(20px, 3vmin);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: var(--emoji-size, 3.5rem);
+            cursor: pointer;
+            box-shadow: 0 var(--card-shadow, 6px) 0 #82af91;
+            transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+            animation: bounceAnimal 3s infinite ease-in-out;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .animal-card:nth-child(even) {
+            animation-delay: 1.5s;
+        }
+
+        .animal-card:hover {
+            transform: scale(1.06) rotate(2deg);
+            background-color: #c1e7cc;
+        }
+
+        .animal-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 0 #82af91;
+        }
+
+        /* Randomizing Effects States */
+        .animal-card.flash-active {
+            background-color: var(--soft-orange) !important;
+            border-color: var(--accent-red) !important;
+            transform: scale(1.12) !important;
+            box-shadow: 0 0 15px var(--accent-red) !important;
+        }
+
+        .animal-card.chosen-winner {
+            background-color: var(--pastel-yellow) !important;
+            border-color: var(--text-brown) !important;
+            box-shadow: 0 0 25px var(--text-brown) !important;
+            animation: dramaticReveal 0.5s ease-out infinite alternate !important;
+            z-index: 50;
+        }
+
+        /* Pop-Up Reward Announcement */
+        .reward-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .reward-popup-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .reward-popup-content {
+            background-color: var(--warm-cream);
+            border: 8px solid var(--pastel-brown);
+            border-radius: 40px;
+            padding: 40px 60px;
+            text-align: center;
+            box-shadow: 0 20px 0 var(--pastel-brown), 0 25px 50px rgba(0,0,0,0.3);
+            transform: scale(0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+            width: 500px;
+        }
+
+        .reward-popup-overlay.show .reward-popup-content {
+            transform: scale(1);
+            animation: popupBounce 0.6s ease-out;
+        }
+
+        .popup-title {
+            font-size: 3rem;
+            color: var(--text-brown);
+            text-shadow: 2px 2px 0px var(--soft-orange);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .popup-score {
+            font-size: 5rem;
+            color: var(--accent-red);
+            text-shadow: 4px 4px 0px var(--text-brown);
+            margin-bottom: 10px;
+        }
+
+        /* High-Visibility Floating Reward Points Engine */
+        .floating-reward {
+            position: absolute;
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FFFFFF !important;
+            /* Thin high-contrast black outline with intense visibility glow */
+            -webkit-text-stroke: 2px #000000;
+            text-shadow: 
+                -2px -2px 0 #000,  
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000,
+                 0px 0px 20px #FFF9C4, 
+                 0px 0px 30px #FFE082;
+            pointer-events: none;
+            animation: floatUpFade 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            z-index: 2000;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.9;
+            z-index: 2500;
+        }
+
+        /* Core Animations */
+        @keyframes bounceAnimal {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 6px 0 var(--text-brown), 0 0 0px rgba(255,224,178,0); }
+            50% { box-shadow: 0 6px 0 var(--text-brown), 0 0 20px #FFE0B2; }
+        }
+
+        @keyframes dramaticReveal {
+            0% { transform: scale(1) rotate(-4deg); }
+            100% { transform: scale(1.18) rotate(4deg); }
+        }
+
+        @keyframes popupBounce {
+            0% { transform: scale(0.3); }
+            60% { transform: scale(1.15); }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { opacity: 1; transform: translateY(-60px) scale(1.3); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        @keyframes popOpen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .shake-animation {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Responsive Breakpoints & Reflow Adjustments */
+        @media (max-width: 768px) {
+            header {
+                justify-content: center;
+                text-align: center;
+                padding: 8px 10px;
+                gap: 10px;
+            }
+            .branding {
+                font-size: 0.9rem;
+            }
+            .nav-buttons {
+                justify-content: center;
+                width: 100%;
+                gap: 8px;
+            }
+            button, .btn {
+                padding: 6px 12px;
+                font-size: 0.95rem;
+            }
+            button#btn-random-reward {
+                font-size: 1.1rem;
+                padding: 8px 16px;
+            }
+            .settings-panel {
+                width: 95%;
+                margin: 5px auto;
+                padding: 6px 12px;
+            }
+            .popup-title {
+                font-size: 2rem;
+            }
+            .popup-score {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="branding">Made by: Mikee B. Gamboa<br>"Teacher Mikee" F.E.T</div>
+        <div class="nav-buttons">
+            <button id="btn-random-reward" onclick="triggerRandomReward()">🎲 RANDOM REWARD</button>
+            <button onclick="shuffleAnimals()">🔀 Shuffle Animals</button>
+            <button onclick="resetBoard()">🔄 Reset Board</button>
+            <button id="music-btn" onclick="toggleMusic()">🎵 Music OFF</button>
+        </div>
+    </header>
+
+    <div class="settings-panel">
+        <div class="setting-group">
+            <label>Minimum Points:</label>
+            <input type="number" id="min-points" value="3" min="1" onchange="validateSettings()">
+        </div>
+        <div class="setting-group">
+            <label>Maximum Points:</label>
+            <input type="number" id="max-points" value="5" min="1" onchange="validateSettings()">
+        </div>
+    </div>
+
+    <main>
+        <div id="board-randomizer" class="animal-grid"></div>
+    </main>
+
+    <div id="reward-popup" class="reward-popup-overlay">
+        <div class="reward-popup-content">
+            <div id="popup-title" class="popup-title">AWESOME!</div>
+            <div id="popup-score" class="popup-score">+5</div>
+            <div style="font-size: 1.5rem; color: var(--pastel-brown);">POINTS REVEALED!</div>
+        </div>
+    </div>
+
+    <script>
+        // Universally supported animal emoji pool
+        const approvedEmojiPool = [
+            "🐶", "🐱", "🐭", "🐹", "🐰",
+            "🦊", "🐻", "🐼", "🐨",
+            "🐯", "🦁", "🐮", "🐷",
+            "🐸", "🐵", "🐔", "🐧",
+            "🐦", "🦆", "🦉",
+            "🐢", "🐙", "🦋", "🐞",
+            "🐠", "🐬", "🐳"
+        ];
+
+        const positiveWordBank = [
+            "AWESOME!", "GREAT JOB!", "FANTASTIC!", "EXCELLENT!", 
+            "SUPER STAR!", "AMAZING!", "WELL DONE!", "NICE WORK!", 
+            "OUTSTANDING!", "BRAVO!", "YOU ROCK!", "KEEP IT UP!", 
+            "INCREDIBLE!", "TERRIFIC!", "WAY TO GO!"
+        ];
+
+        // State System
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let bgmInterval = null;
+        let isRandomizing = false;
+
+        // Initialize Audio Context gracefully via user action
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Settings Validation Engine
+        function validateSettings() {
+            let minInput = document.getElementById('min-points');
+            let maxInput = document.getElementById('max-points');
+            let min = parseInt(minInput.value);
+            let max = parseInt(maxInput.value);
+
+            if (isNaN(min) || min < 1) { min = 1; minInput.value = 1; }
+            if (isNaN(max) || max < 1) { max = 1; maxInput.value = 1; }
+
+            if (min > max) {
+                max = min;
+                maxInput.value = max;
+            }
+        }
+
+        function getMinMax() {
+            validateSettings();
+            let min = parseInt(document.getElementById('min-points').value) || 3;
+            let max = parseInt(document.getElementById('max-points').value) || 5;
+            return { min, max };
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Web Audio API Audio synthesizer
+        function playSound(type) {
+            initAudioContext();
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'button') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(650, now + 0.08);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } 
+            else if (type === 'reward' || type === 'celebration') {
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; 
+                notes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.07);
+                    gain.gain.setValueAtTime(0.4, now + index * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.07 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + index * 0.07);
+                    osc.stop(now + index * 0.07 + 0.3);
+                });
+            }
+            else if (type === 'tick') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.04);
+            }
+        }
+
+        // Loop background music (Safari adventure vibe)
+        function toggleMusic() {
+            initAudioContext();
+            const musicBtn = document.getElementById('music-btn');
+            isMusicPlaying = !isMusicPlaying;
+
+            if (isMusicPlaying) {
+                musicBtn.classList.add('music-on');
+                musicBtn.innerText = "🎵 Music ON";
+                
+                const chords = [[261.63, 329.63, 392.00], [196.00, 246.94, 293.66], [220.00, 261.63, 329.63], [174.61, 220.00, 261.63]];
+                let step = 0;
+                
+                bgmInterval = setInterval(() => {
+                    if (!isMusicPlaying) return;
+                    const now = audioCtx.currentTime;
+                    const chord = chords[step % chords.length];
+                    chord.forEach(freq => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now);
+                        gain.gain.setValueAtTime(0.06, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.85);
+                    });
+                    step++;
+                }, 1000);
+            } else {
+                musicBtn.classList.remove('music-on');
+                musicBtn.innerText = "🎵 Music OFF";
+                if (bgmInterval) {
+                    clearInterval(bgmInterval);
+                    bgmInterval = null;
+                }
+            }
+        }
+
+        // Advanced Responsive Grid Architecture Engine
+        function populateRandomizerBoard() {
+            const board = document.getElementById('board-randomizer');
+            const mainArea = document.querySelector('main');
+            board.innerHTML = '';
+
+            // Extract dynamic layout heights to compute strict bounding constraints
+            const availableWidth = mainArea.clientWidth;
+            const availableHeight = mainArea.clientHeight;
+
+            // Target responsive structural calculations
+            let cols, rows, gap, emojiSize, shadow;
+
+            if (availableWidth < 600) { 
+                // Mobile Profile optimization
+                cols = 4;
+                rows = 5;
+                gap = "1.5vmin";
+                emojiSize = "min(2.5rem, 7vmin)";
+                shadow = "4px";
+            } else if (availableWidth < 1024) { 
+                // Tablet Profile optimization
+                cols = 5;
+                rows = 5;
+                gap = "2vmin";
+                emojiSize = "min(3.2rem, 8vmin)";
+                shadow = "5px";
+            } else { 
+                // Large Displays and Smartboards profile optimization
+                cols = 6;
+                rows = 4;
+                gap = "3vmin"; // Spacious spacing for finger tapping accuracy
+                emojiSize = "min(4.5rem, 9vmin)";
+                shadow = "8px";
+            }
+
+            // Apply calculated layouts to CSS variables
+            board.style.setProperty('--grid-cols', cols);
+            board.style.setProperty('--grid-rows', rows);
+            board.style.setProperty('--grid-gap', gap);
+            board.style.setProperty('--emoji-size', emojiSize);
+            board.style.setProperty('--card-shadow', shadow);
+
+            const totalElements = cols * rows;
+
+            for (let i = 0; i < totalElements; i++) {
+                const randomEmoji = approvedEmojiPool[Math.floor(Math.random() * approvedEmojiPool.length)];
+                
+                const card = document.createElement('div');
+                card.className = 'animal-card';
+                card.innerText = randomEmoji;
+                card.onclick = (e) => handleAnimalClick(e, card);
+                board.appendChild(card);
+            }
+        }
+
+        // Tap Animal Trigger
+        function handleAnimalClick(e, element) {
+            if (isRandomizing) return;
+            const { min, max } = getMinMax();
+            const reward = getRandomInt(min, max);
+
+            playSound('reward');
+            createFloatingReward(`+${reward}`, e.clientX, e.clientY);
+            triggerCelebrationEffects(e.clientX, e.clientY);
+
+            // Pop Animation
+            element.style.animation = 'none';
+            void element.offsetHeight; 
+            element.style.animation = 'popOpen 0.4s ease-out';
+            setTimeout(() => element.style.animation = '', 400);
+        }
+
+        // Feature Action: Automatic Random Selection Sequence
+        function triggerRandomReward() {
+            if (isRandomizing) return;
+            const cards = document.querySelectorAll('.animal-card');
+            if (cards.length === 0) return;
+
+            isRandomizing = true;
+            playSound('button');
+
+            let duration = 1800; 
+            let intervalTime = 60; 
+            let elapsed = 0;
+            let lastIndex = -1;
+
+            const board = document.getElementById('board-randomizer');
+            board.classList.add('shake-animation');
+            setTimeout(() => board.classList.remove('shake-animation'), duration);
+
+            // Rapid Selection Loop
+            const shuffleInterval = setInterval(() => {
+                if (lastIndex >= 0 && cards[lastIndex]) {
+                    cards[lastIndex].classList.remove('flash-active');
+                }
+
+                let currentRandomIndex = Math.floor(Math.random() * cards.length);
+                if (currentRandomIndex === lastIndex) {
+                    currentRandomIndex = (currentRandomIndex + 1) % cards.length;
+                }
+
+                cards[currentRandomIndex].classList.add('flash-active');
+                playSound('tick');
+                
+                lastIndex = currentRandomIndex;
+                elapsed += intervalTime;
+
+                if (elapsed >= duration - 400 && intervalTime === 60) {
+                    clearInterval(shuffleInterval);
+                    intervalTime = 120;
+                    runSlowerPhase();
+                }
+            }, intervalTime);
+
+            function runSlowerPhase() {
+                const slowerInterval = setInterval(() => {
+                    if (lastIndex >= 0 && cards[lastIndex]) {
+                        cards[lastIndex].classList.remove('flash-active');
+                    }
+
+                    let currentRandomIndex = Math.floor(Math.random() * cards.length);
+                    cards[currentRandomIndex].classList.add('flash-active');
+                    playSound('tick');
+                    
+                    lastIndex = currentRandomIndex;
+                    elapsed += intervalTime;
+
+                    if (elapsed >= duration) {
+                        clearInterval(slowerInterval);
+                        finalizeWinnerSelection(cards[lastIndex]);
+                    }
+                }, intervalTime);
+            }
+        }
+
+        // Finalize Winning Phase
+        function finalizeWinnerSelection(winnerCard) {
+            if (!winnerCard) {
+                isRandomizing = false;
+                return;
+            }
+
+            winnerCard.classList.remove('flash-active');
+            winnerCard.classList.add('chosen-winner');
+
+            const { min, max } = getMinMax();
+            const rewardPoints = getRandomInt(min, max);
+            const chosenText = positiveWordBank[Math.floor(Math.random() * positiveWordBank.length)];
+
+            playSound('celebration');
+            const rect = winnerCard.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+
+            triggerCelebrationEffects(x, y);
+            createFloatingReward(`+${rewardPoints}`, x, y);
+
+            setTimeout(() => {
+                displayPopupAnnouncement(chosenText, rewardPoints);
+            }, 200);
+
+            setTimeout(() => {
+                winnerCard.classList.remove('chosen-winner');
+                isRandomizing = false;
+            }, 2500);
+        }
+
+        // Display Large Announcement Pop-up Screen
+        function displayPopupAnnouncement(title, score) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-score').innerText = `+${score}`;
+            
+            const popup = document.getElementById('reward-popup');
+            popup.classList.add('show');
+
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2000);
+        }
+
+        // Floating Score Animation Element Factory (Pure White, Black Stroke, Soft Yellow Glow)
+        function createFloatingReward(text, x, y) {
+            const reward = document.createElement('div');
+            reward.className = 'floating-reward';
+            reward.innerText = text;
+            reward.style.left = `${x - 40}px`;
+            reward.style.top = `${y - 40}px`;
+            
+            document.body.appendChild(reward);
+            setTimeout(() => reward.remove(), 1200);
+        }
+
+        // Particle Burst FX (Stars, Confetti, Shapes)
+        function triggerCelebrationEffects(targetX, targetY) {
+            const particleColors = ['#FFD166', '#06D6A0', '#118AB2', '#FF6B6B', '#8338EC', '#FB8500'];
+            const totalParticles = 25;
+
+            for (let i = 0; i < totalParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const isStar = Math.random() > 0.5;
+                if (isStar) {
+                    particle.innerText = "⭐";
+                    particle.style.fontSize = `${Math.random() * 15 + 15}px`;
+                } else {
+                    particle.style.width = `${Math.random() * 8 + 8}px`;
+                    particle.style.height = `${Math.random() * 8 + 8}px`;
+                    particle.style.backgroundColor = particleColors[Math.floor(Math.random() * particleColors.length)];
+                    particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                }
+
+                particle.style.left = `${targetX}px`;
+                particle.style.top = `${targetY}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 180 + 60;
+                const spreadX = Math.cos(angle) * speed;
+                const spreadY = Math.sin(angle) * speed - 60; 
+
+                particle.animate([
+                    { transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${spreadX}px, ${spreadY}px) rotate(${Math.random() * 360}deg) scale(0.3)`, opacity: 0 }
+                ], {
+                    duration: 1500,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.25, 1)'
+                });
+
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1500);
+            }
+        }
+
+        // Action: Shuffle Board Setup
+        function shuffleAnimals() {
+            if (isRandomizing) return;
+            playSound('button');
+            const board = document.getElementById('board-randomizer');
+            board.classList.add('shake-animation');
+            setTimeout(() => board.classList.remove('shake-animation'), 400);
+            populateRandomizerBoard();
+        }
+
+        // Action: Master Board Hard Reset System
+        function resetBoard() {
+            if (isRandomizing) return;
+            playSound('button');
+            
+            const mainContent = document.querySelector('main');
+            mainContent.classList.add('shake-animation');
+            setTimeout(() => mainContent.classList.remove('shake-animation'), 400);
+
+            document.querySelectorAll('.floating-reward').forEach(el => el.remove());
+            document.querySelectorAll('.particle').forEach(el => el.remove());
+
+            document.getElementById('min-points').value = 3;
+            document.getElementById('max-points').value = 5;
+
+            populateRandomizerBoard();
+        }
+
+        // Initialize Core Viewport Render Loop
+        populateRandomizerBoard();
+
+        // Responsive Adaptability Listener (debounced for stability)
+        window.addEventListener('resize', () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(() => {
+                populateRandomizerBoard();
+            }, 150);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,945 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>🦁 Zoo Safari Interactive Whiteboard</title>
+    <!-- Google Fonts Framework Integration -->
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght=700&family=JUA&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Core Properties & Themed Safari System Palette */
+        :root {
+            --pastel-brown: #A67C52;
+            --pastel-yellow: #FFF3CD;
+            --pastel-green: #D4EDDA;
+            --warm-cream: #FDFBF7;
+            --soft-orange: #FFE0B2;
+            --text-brown: #5C3A21;
+            --white: #FFFFFF;
+            --muted-gray: #BDC3C7;
+            --safari-orange: #FFB74D;
+            --deep-safari-brown: #6D4C41;
+            
+            --ink-black: #2C3E50;
+            --ink-red: #E74C3C;
+            --ink-blue: #3498DB;
+            --ink-green: #2ECC71;
+            --ink-purple: #9B59B6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none; /* Block native scrolling and gestures entirely for drawing precision */
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--warm-cream);
+            font-family: 'JUA', sans-serif;
+            color: var(--text-brown);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 14. CTTO HEADER WATERMARK DESIGN LAYOUT */
+        header {
+            background-color: var(--pastel-brown);
+            color: var(--white);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            z-index: 1000;
+            flex-shrink: 0;
+            height: 60px;
+        }
+
+        .ctto-branding {
+            font-size: 0.85rem;
+            line-height: 1.2;
+            font-family: 'JUA', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            white-space: pre-line;
+            min-width: 140px;
+        }
+
+        .global-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Chibi-Styled Premium Interactive Safari UI Tool Button Base */
+        .btn {
+            font-family: 'Balsamiq Sans', sans-serif;
+            font-weight: 700;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            border: 3px solid var(--deep-safari-brown);
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 0 var(--deep-safari-brown);
+            transition: transform 0.05s, background-color 0.15s, box-shadow 0.05s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn:hover {
+            background-color: var(--soft-orange);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--deep-safari-brown);
+        }
+
+        /* Active Tool Selection Glow Indicator Accent */
+        .btn.active-tool {
+            background-color: var(--pastel-green) !important;
+            box-shadow: 0 0 12px rgba(46, 204, 113, 0.6), inset 0 0 4px rgba(0,0,0,0.1);
+            border-color: #27AE60;
+        }
+
+        .btn.active-size {
+            background-color: var(--safari-orange) !important;
+            border-color: var(--deep-safari-brown) !important;
+            color: var(--white);
+        }
+
+        .btn.btn-lock {
+            background-color: #FFCDD2;
+        }
+        .btn.btn-lock.locked-state {
+            background-color: #EF5350 !important;
+            color: var(--white) !important;
+        }
+
+        #btn-mode-toggle {
+            background-color: var(--pastel-yellow);
+        }
+
+        #btn-clear-all {
+            background-color: var(--soft-orange);
+        }
+
+        #btn-lines-global {
+            background-color: #E1BEE7;
+        }
+
+        /* Central Work Stage Space Grid Engine Layout - FIXED BOX MODEL FOR FULL SCREEN SCALE FIT */
+        main {
+            flex: 1;
+            display: flex;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); /* Jungle Gradient Atmosphere Background */
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        /* Dynamic Canvas Window Frame Border Containers */
+        .canvas-workspace-wrapper {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background-color: var(--white);
+            border: 6px solid var(--pastel-brown);
+            border-radius: 24px;
+            box-shadow: 0 8px 16px rgba(92, 58, 33, 0.15), inset 0 0 20px rgba(0,0,0,0.03);
+            overflow: hidden;
+            display: flex;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        #right-board-wrapper {
+            display: none;
+        }
+
+        /* Container designed to hold both drawing layers stack elements */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* GUIDED HANDWRITING MODE - SUBTLE REPEATING 4-LINE CANVAS STACK LAYER */
+        .writing-lines-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Crucial interaction rule: background guide layer only */
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background-color: transparent;
+        }
+
+        .writing-lines-overlay.lines-active {
+            opacity: 1;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background-color: transparent;
+            cursor: crosshair;
+            z-index: 2; /* Sits directly over writing lines to ensure writing flow visibility */
+        }
+
+        /* Canvas Lock Mode Visual State Overlay Presentation Rules */
+        .canvas-workspace-wrapper.workspace-locked::after {
+            content: "🔒 BOARD LOCKED";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(109, 76, 65, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(92, 58, 33, 0.35);
+            font-family: 'JUA', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* FIXED FOOTER CONTROLS DOCK FOR COMPACT ICON-ONLY PEN TOOLS */
+        footer {
+            background-color: var(--deep-safari-brown);
+            padding: 6px 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.15);
+            z-index: 1000;
+            flex-shrink: 0;
+            min-height: 54px;
+        }
+
+        .board-specific-toolbar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--white);
+            min-width: 0;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 1;
+        }
+
+        .toolbar-title-tag {
+            font-family: 'JUA', sans-serif;
+            font-size: 0.8rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 4px 6px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            color: var(--pastel-yellow);
+            white-space: nowrap;
+        }
+
+        /* Sub-palette Colors Swatch Matrix Component Layout */
+        .color-selector-wrapper {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px 6px;
+            border-radius: 12px;
+            flex-shrink: 1;
+        }
+
+        .color-swatch-node {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            flex-shrink: 0;
+        }
+
+        .color-swatch-node:hover {
+            transform: scale(1.15);
+        }
+
+        .color-swatch-node.selected-swatch {
+            transform: scale(1.25);
+            border-color: var(--pastel-yellow);
+            box-shadow: 0 0 8px rgba(255, 235, 59, 1);
+        }
+
+        /* Icon-only size button dot shapes adjustments */
+        .size-dot {
+            display: inline-block;
+            background-color: var(--text-brown);
+            border-radius: 50%;
+            transition: background-color 0.15s;
+        }
+        .active-size .size-dot {
+            background-color: var(--white);
+        }
+        .dot-thin { width: 6px; height: 6px; }
+        .dot-med { width: 10px; height: 10px; }
+        .dot-thick { width: 16px; height: 16px; }
+
+        /* Premium On-Screen Notification Pop-Ups */
+        .safari-alert-popup-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            background: linear-gradient(135deg, #FFFDE7 0%, #FFF59D 100%);
+            border: 4px solid var(--pastel-brown);
+            border-radius: 24px;
+            padding: 16px 32px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25), inset 0 0 12px rgba(255,235,59,0.3);
+            color: var(--text-brown);
+            font-family: 'JUA', sans-serif;
+            font-size: 1.6rem;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 2000;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .safari-alert-popup-overlay.popup-visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .popup-sub-detail {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-family: sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Adaptive Responsive Configuration Rules */
+        @media (max-width: 1024px) {
+            header {
+                height: auto;
+                flex-direction: column;
+                padding: 6px;
+                gap: 4px;
+            }
+            .ctto-branding {
+                text-align: center;
+            }
+            footer {
+                padding: 4px 8px;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body.dual-layout-active main {
+                flex-direction: column;
+            }
+            footer {
+                flex-direction: column;
+                gap: 4px;
+            }
+            .board-specific-toolbar {
+                width: 100%;
+                justify-content: space-between;
+                padding: 4px 6px;
+            }
+            .btn {
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                border-radius: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .board-specific-toolbar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 14. Permanent Signature Watermark Header Container -->
+    <header>
+        <div class="ctto-branding">Created by:
+Mikee Gamboa
+"Teacher Mikee" (FET)</div>
+        
+        <div class="global-controls">
+            <button class="btn" id="btn-lines-global" onclick="toggleGlobalHandwritingGuides()">📏 WITH LINES</button>
+            <button class="btn" id="btn-mode-toggle" onclick="toggleSplitScreenMode()">🌓 DUAL MODE</button>
+            <button class="btn" id="btn-clear-all" onclick="executeGlobalClearAllBoards()">🧹 CLEAR ALL (GLOBAL)</button>
+        </div>
+    </header>
+
+    <!-- Centralized Multi-Canvas Rendering Workspace Stage Area -->
+    <main id="workspace-container">
+        <div class="canvas-workspace-wrapper" id="left-board-wrapper">
+            <div class="canvas-container">
+                <canvas id="lines-canvas-left" class="writing-lines-overlay"></canvas>
+                <canvas id="canvas-left"></canvas>
+            </div>
+        </div>
+        <div class="canvas-workspace-wrapper" id="right-board-wrapper">
+            <div class="canvas-container">
+                <canvas id="lines-canvas-right" class="writing-lines-overlay"></canvas>
+                <canvas id="canvas-right"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- FIXED FOOTER CONTROLS DOCK AREA -->
+    <footer>
+        <!-- LEFT BOARD TOOLBAR -->
+        <div class="board-specific-toolbar" id="toolbar-left">
+            <div class="toolbar-group">
+                <span class="toolbar-title-tag" id="tag-left-label" style="display:none;">L</span>
+                <button class="btn btn-lock" id="btn-lock-left" onclick="toggleCanvasInputLock('left')">🔓</button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="btn active-tool" id="tool-pen-left" onclick="selectActiveToolMode('left', 'pen')">🖊</button>
+                <button class="btn" id="tool-erase-left" onclick="selectActiveToolMode('left', 'erase')">🧽</button>
+            </div>
+            
+            <div class="color-selector-wrapper">
+                <div class="color-swatch-node selected-swatch" style="background-color: var(--ink-black);" onclick="updatePenColorSelection('left', '#2C3E50', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-red);" onclick="updatePenColorSelection('left', '#E74C3C', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-blue);" onclick="updatePenColorSelection('left', '#3498DB', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-green);" onclick="updatePenColorSelection('left', '#2ECC71', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-purple);" onclick="updatePenColorSelection('left', '#9B59B6', this)"></div>
+            </div>
+
+            <div class="toolbar-group">
+                <button class="btn" id="size-thin-left" onclick="updatePenSizeSelection('left', 4, this)"><span class="size-dot dot-thin"></span></button>
+                <button class="btn active-size" id="size-med-left" onclick="updatePenSizeSelection('left', 10, this)"><span class="size-dot dot-med"></span></button>
+                <button class="btn" id="size-thick-left" onclick="updatePenSizeSelection('left', 24, this)"><span class="size-dot dot-thick"></span></button>
+            </div>
+
+            <button class="btn" style="background-color: #FFE0B2;" onclick="purgeBoardCanvasContext('left')">🧹</button>
+        </div>
+
+        <!-- RIGHT BOARD TOOLBAR -->
+        <div class="board-specific-toolbar" id="toolbar-right" style="display: none;">
+            <div class="toolbar-group">
+                <span class="toolbar-title-tag">R</span>
+                <button class="btn btn-lock" id="btn-lock-right" onclick="toggleCanvasInputLock('right')">🔓</button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="btn active-tool" id="tool-pen-right" onclick="selectActiveToolMode('right', 'pen')">🖊</button>
+                <button class="btn" id="tool-erase-right" onclick="selectActiveToolMode('right', 'erase')">🧽</button>
+            </div>
+            
+            <div class="color-selector-wrapper">
+                <div class="color-swatch-node selected-swatch" style="background-color: var(--ink-black);" onclick="updatePenColorSelection('right', '#2C3E50', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-red);" onclick="updatePenColorSelection('right', '#E74C3C', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-blue);" onclick="updatePenColorSelection('right', '#3498DB', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-green);" onclick="updatePenColorSelection('right', '#2ECC71', this)"></div>
+                <div class="color-swatch-node" style="background-color: var(--ink-purple);" onclick="updatePenColorSelection('right', '#9B59B6', this)"></div>
+            </div>
+
+            <div class="toolbar-group">
+                <button class="btn" id="size-thin-right" onclick="updatePenSizeSelection('right', 4, this)"><span class="size-dot dot-thin"></span></button>
+                <button class="btn active-size" id="size-med-right" onclick="updatePenSizeSelection('right', 10, this)"><span class="size-dot dot-med"></span></button>
+                <button class="btn" id="size-thick-right" onclick="updatePenSizeSelection('right', 24, this)"><span class="size-dot dot-thick"></span></button>
+            </div>
+
+            <button class="btn" style="background-color: #FFE0B2;" onclick="purgeBoardCanvasContext('right')">🧹</button>
+        </div>
+    </footer>
+
+    <!-- Custom App Center Notifications Alert Element Frame -->
+    <div class="safari-alert-popup-overlay" id="popup-alert-card">
+        <div id="popup-message-main">BOARD CLEARED 🧹</div>
+        <div class="popup-sub-detail" id="popup-message-sub"></div>
+    </div>
+
+    <!-- Core Interactive Whiteboard Functional Logic Script System -->
+    <script>
+        // System Operation Parameters Memory Records
+        let activeInterfaceMode = "singular"; // Options: "singular", "dual"
+        let alertPopupAutoDismissTimerRef = null;
+        let globalLinesState = false; // Monitors "WITH LINES" layout parameter
+
+        // Core Configuration Maps tracking parameters for boards autonomously
+        const boardStateEngine = {
+            left: {
+                canvas: null, ctx: null, isDrawing: false, isInputLocked: false,
+                linesCanvas: null, linesCtx: null,
+                currentTool: "pen", currentSize: 10, currentColor: "#2C3E50",
+                lastX: 0, lastY: 0
+            },
+            right: {
+                canvas: null, ctx: null, isDrawing: false, isInputLocked: false,
+                linesCanvas: null, linesCtx: null,
+                currentTool: "pen", currentSize: 10, currentColor: "#2C3E50",
+                lastX: 0, lastY: 0
+            }
+        };
+
+        // Synthesized Audio Pop SFX Generator Pipeline Block
+        let audioCtxInstance = null;
+        function triggerChibiAudioPopClick() {
+            try {
+                if (!audioCtxInstance) {
+                    audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtxInstance.state === 'suspended') {
+                    audioCtxInstance.resume();
+                }
+                const timeNow = audioCtxInstance.currentTime;
+                const oscNode = audioCtxInstance.createOscillator();
+                const gainNode = audioCtxInstance.createGain();
+                
+                oscNode.type = 'sine';
+                oscNode.frequency.setValueAtTime(460, timeNow);
+                oscNode.frequency.exponentialRampToValueAtTime(820, timeNow + 0.06);
+                
+                gainNode.gain.setValueAtTime(0.25, timeNow);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.06);
+                
+                oscNode.connect(gainNode);
+                gainNode.connect(audioCtxInstance.destination);
+                oscNode.start(timeNow);
+                oscNode.stop(timeNow + 0.06);
+            } catch (err) { /* Safe block for environment constraints */ }
+        }
+
+        // Initialize App Canvas Environments Mapping Routine
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeTargetCanvasSystem('left', 'canvas-left', 'lines-canvas-left');
+            initializeTargetCanvasSystem('right', 'canvas-right', 'lines-canvas-right');
+            
+            window.addEventListener('resize', synchronizeCanvasScaleDimensions);
+            synchronizeCanvasScaleDimensions();
+        });
+
+        function initializeTargetCanvasSystem(boardKey, elementId, linesElementId) {
+            const state = boardStateEngine[boardKey];
+            state.canvas = document.getElementById(elementId);
+            state.ctx = state.canvas.getContext('2d', { alpha: true });
+            
+            // Map independent guide background canvas parameters
+            state.linesCanvas = document.getElementById(linesElementId);
+            state.linesCtx = state.linesCanvas.getContext('2d');
+
+            // Attach Unified Pointer Tracking Event Streams Matrix
+            state.canvas.addEventListener('pointerdown', (e) => executePointerDownAction(boardKey, e));
+            state.canvas.addEventListener('pointermove', (e) => executePointerMoveAction(boardKey, e));
+            state.canvas.addEventListener('pointerup', (e) => executePointerUpAction(boardKey, e));
+            state.canvas.addEventListener('pointercancel', (e) => executePointerUpAction(boardKey, e));
+        }
+
+        function synchronizeCanvasScaleDimensions() {
+            ['left', 'right'].forEach(boardKey => {
+                const state = boardStateEngine[boardKey];
+                if (!state.canvas) return;
+
+                // Cache active drawing vectors layers safely
+                const technicalBuffer = document.createElement('canvas');
+                technicalBuffer.width = state.canvas.width;
+                technicalBuffer.height = state.canvas.height;
+                const bufferCtx = technicalBuffer.getContext('2d');
+                if (state.canvas.width > 0 && state.canvas.height > 0) {
+                    bufferCtx.drawImage(state.canvas, 0, 0);
+                }
+
+                // Adjust bounding metrics dimensions calculations
+                const rectBounds = state.canvas.parentElement.getBoundingClientRect();
+                
+                // Align writing canvas metrics
+                state.canvas.width = rectBounds.width;
+                state.canvas.height = rectBounds.height;
+                
+                // Align guide lines layer canvas metrics concurrently
+                state.linesCanvas.width = rectBounds.width;
+                state.linesCanvas.height = rectBounds.height;
+
+                // Restore drawing layers context parameters
+                state.ctx.lineCap = 'round';
+                state.ctx.lineJoin = 'round';
+                
+                state.ctx.drawImage(technicalBuffer, 0, 0, technicalBuffer.width, technicalBuffer.height, 0, 0, state.canvas.width, state.canvas.height);
+                
+                // Redraw guide matrix cleanly under new scale proportions maps
+                renderGuideLinesMatrix(boardKey);
+            });
+        }
+
+        // COMFORTABLE KINDERGARTEN WRITING ENGINE WITH 1-INCH GAP ADJUSTMENT & GUARANTEED BOTTOM SET LOCK
+        function renderGuideLinesMatrix(boardKey) {
+            const state = boardStateEngine[boardKey];
+            const ctx = state.linesCtx;
+            const w = state.linesCanvas.width;
+            const h = state.linesCanvas.height;
+
+            // Purge background before mapping lines configurations loops
+            ctx.clearRect(0, 0, w, h);
+
+            // Comfortably inflated inner line gaps for oversized school practice strokes
+            const innerLineGap = Math.max(22, Math.min(34, h * 0.052)); 
+            const clusterHeight = innerLineGap * 3;
+            
+            // PATCH REVISION: Exact 1 inch spacing separation gap configured responsively (~96 pixels standard mapping)
+            const separationGap = Math.max(70, Math.min(96, h * 0.12)); 
+            const totalSetStride = clusterHeight + separationGap;
+
+            // Compute safety baseline limits to leave room for comfortable bottom padding edge rules
+            const bottomMarginOffset = 25;
+            const maxAllowedY = h - bottomMarginOffset;
+
+            // Collect line positions lists dynamically to ensure flawless rendering loops
+            let lineSetStartingPoints = [];
+            
+            // Top and intermediate sets loop generator tracks
+            let currentTrackY = innerLineGap * 1.5;
+            while (currentTrackY + clusterHeight <= maxAllowedY) {
+                lineSetStartingPoints.push(currentTrackY);
+                currentTrackY += totalSetStride;
+            }
+
+            // PATCH REVISION: GUARANTEED COMPLETE LINE SET LOCKED AT THE BOTTOM
+            // Overrides the final position entry to ensure it hugs the bottom boundary zone cleanly without clips
+            const lockedBottomSetY = maxAllowedY - clusterHeight;
+            
+            if (lineSetStartingPoints.length === 0) {
+                lineSetStartingPoints.push(lockedBottomSetY);
+            } else {
+                // Check if the current bottom set overlaps heavily or leaves an expansive void gap space below
+                const lastRegisteredY = lineSetStartingPoints[lineSetStartingPoints.length - 1];
+                if (lockedBottomSetY - lastRegisteredY > 40) {
+                    // Space permits appending or fine-tuning the positioning alignment matrix securely
+                    if (lastRegisteredY + totalSetStride <= h) {
+                        lineSetStartingPoints[lineSetStartingPoints.length - 1] = lockedBottomSetY;
+                    } else {
+                        lineSetStartingPoints.push(lockedBottomSetY);
+                    }
+                } else {
+                    // Shift last index position safely down to guarantee it anchors seamlessly at the base edge
+                    lineSetStartingPoints[lineSetStartingPoints.length - 1] = lockedBottomSetY;
+                }
+            }
+
+            ctx.save();
+            
+            // Apply slight jungle soft ink transparent theme opacity blend properties matrix
+            ctx.globalAlpha = 0.22; 
+            ctx.shadowBlur = 0;
+
+            // Execute line drawing procedures for all validated vector tracks safely
+            lineSetStartingPoints.forEach(yOffset => {
+                let y1 = yOffset;
+                let y2 = y1 + innerLineGap;
+                let y3 = y2 + innerLineGap;
+                let y4 = y3 + innerLineGap;
+
+                // L1 -> BROKEN TRANSPARENT LINE
+                ctx.strokeStyle = '#2C3E50';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([8, 7]);
+                ctx.beginPath(); ctx.moveTo(0, y1); ctx.lineTo(w, y1); ctx.stroke();
+
+                // L2 -> BROKEN TRANSPARENT LINE
+                ctx.beginPath(); ctx.moveTo(0, y2); ctx.lineTo(w, y2); ctx.stroke();
+
+                // L3 -> SOLID BLACK LINE
+                ctx.setLineDash([]); // Reset line pattern back to solid matrix vectors
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(0, y3); ctx.lineTo(w, y3); ctx.stroke();
+
+                // L4 -> SOLID RED LINE (Kindergarten baseline marker indicator)
+                ctx.strokeStyle = '#E74C3C';
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(0, y4); ctx.lineTo(w, y4); ctx.stroke();
+            });
+
+            ctx.restore();
+        }
+
+        // TOGGLE WRITING GUIDE OVERLAY ACROSS BOTH SINGLE AND DUAL WORKSPACES INDEPENDENTLY
+        function toggleGlobalHandwritingGuides() {
+            triggerChibiAudioPopClick();
+            globalLinesState = !globalLinesState;
+            const linesBtn = document.getElementById('btn-lines-global');
+
+            ['left', 'right'].forEach(boardKey => {
+                const lineOverlayCanvas = document.getElementById(`lines-canvas-${boardKey}`);
+                if (globalLinesState) {
+                    lineOverlayCanvas.classList.add('lines-active');
+                    renderGuideLinesMatrix(boardKey);
+                } else {
+                    lineOverlayCanvas.classList.remove('lines-active');
+                }
+            });
+
+            if (globalLinesState) {
+                linesBtn.classList.add('active-tool');
+                displaySafariCenterPopup("GUIDE LINES ON 📏", "Handwriting lines activated safely.");
+            } else {
+                linesBtn.classList.remove('active-tool');
+                displaySafariCenterPopup("GUIDE LINES OFF 🔲", "Returned to free drawing mode.");
+            }
+        }
+
+        // Pointer Processing Execution Matrices Algorithms
+        function executePointerDownAction(boardKey, event) {
+            const state = boardStateEngine[boardKey];
+            if (state.isInputLocked) return;
+            state.isDrawing = true;
+
+            const targetCoords = getLocalizedPointerCoordinates(state.canvas, event);
+            state.lastX = targetCoords.x;
+            state.lastY = targetCoords.y;
+            
+            drawVectorSegments(boardKey, state.lastX, state.lastY, targetCoords.x, targetCoords.y);
+            state.canvas.setPointerCapture(event.pointerId);
+        }
+
+        function executePointerMoveAction(boardKey, event) {
+            const state = boardStateEngine[boardKey];
+            if (!state.isDrawing || state.isInputLocked) return;
+
+            const currentCoords = getLocalizedPointerCoordinates(state.canvas, event);
+            drawVectorSegments(boardKey, state.lastX, state.lastY, currentCoords.x, currentCoords.y);
+            
+            state.lastX = currentCoords.x;
+            state.lastY = currentCoords.y;
+        }
+
+        function executePointerUpAction(boardKey, event) {
+            const state = boardStateEngine[boardKey];
+            if (state.isDrawing) {
+                state.isDrawing = false;
+                try {
+                    state.canvas.releasePointerCapture(event.pointerId);
+                } catch(e) {}
+            }
+        }
+
+        function getLocalizedPointerCoordinates(canvasElement, event) {
+            const boundingBox = canvasElement.getBoundingClientRect();
+            return {
+                x: event.clientX - boundingBox.left,
+                y: event.clientY - boundingBox.top
+            };
+        }
+
+        function drawVectorSegments(boardKey, originX, originY, destX, destY) {
+            const state = boardStateEngine[boardKey];
+            const context = state.ctx;
+
+            context.beginPath();
+            context.moveTo(originX, originY);
+            context.lineTo(destX, destY);
+
+            if (state.currentTool === "erase") {
+                context.globalCompositeOperation = 'destination-out';
+                context.lineWidth = state.currentSize * 2.5; 
+            } else {
+                context.globalCompositeOperation = 'source-over';
+                context.lineWidth = state.currentSize;
+                context.strokeStyle = state.currentColor;
+            }
+
+            context.stroke();
+            context.closePath();
+        }
+
+        // UI Configuration Interaction Switcher Routines
+        function toggleSplitScreenMode() {
+            triggerChibiAudioPopClick();
+            const modeBtn = document.getElementById('btn-mode-toggle');
+            const rightWrapper = document.getElementById('right-board-wrapper');
+            const rightToolbar = document.getElementById('toolbar-right');
+            const leftLabel = document.getElementById('tag-left-label');
+            const bodyNode = document.body;
+
+            if (activeInterfaceMode === "singular") {
+                activeInterfaceMode = "dual";
+                bodyNode.classList.add('dual-layout-active');
+                modeBtn.innerText = "🟩 SINGULAR MODE";
+                rightWrapper.style.display = "flex";
+                rightToolbar.style.display = "flex";
+                leftLabel.style.display = "inline-block";
+                displaySafariCenterPopup("DUAL MODE ACTIVATED 🌓", "Two independent boards ready!");
+            } else {
+                activeInterfaceMode = "singular";
+                bodyNode.classList.remove('dual-layout-active');
+                modeBtn.innerText = "🌓 DUAL MODE";
+                rightWrapper.style.display = "none";
+                rightToolbar.style.display = "none";
+                leftLabel.style.display = "none";
+                displaySafariCenterPopup("SINGULAR MODE ACTIVATED 🟩", "Shared layout canvas space active.");
+            }
+            
+            setTimeout(synchronizeCanvasScaleDimensions, 50);
+        }
+
+        function executeGlobalClearAllBoards() {
+            triggerChibiAudioPopClick();
+            
+            if (boardStateEngine.left.canvas) {
+                boardStateEngine.left.ctx.clearRect(0, 0, boardStateEngine.left.canvas.width, boardStateEngine.left.canvas.height);
+            }
+            if (boardStateEngine.right.canvas) {
+                boardStateEngine.right.ctx.clearRect(0, 0, boardStateEngine.right.canvas.width, boardStateEngine.right.canvas.height);
+            }
+
+            displaySafariCenterPopup("ALL BOARDS CLEARED 🧹", "Wiped writing layouts across both layers.");
+        }
+
+        function toggleCanvasInputLock(boardKey) {
+            triggerChibiAudioPopClick();
+            const state = boardStateEngine[boardKey];
+            const lockBtn = document.getElementById(`btn-lock-${boardKey}`);
+            const wrapper = document.getElementById(`${boardKey}-board-wrapper`);
+
+            state.isInputLocked = !state.isInputLocked;
+
+            if (state.isInputLocked) {
+                lockBtn.innerText = "🔒";
+                lockBtn.classList.add('locked-state');
+                wrapper.classList.add('workspace-locked');
+                displaySafariCenterPopup(`${boardKey.toUpperCase()} BOARD LOCKED 🔒`, "Drawing inputs blocked on this side.");
+            } else {
+                lockBtn.innerText = "🔓";
+                lockBtn.classList.remove('locked-state');
+                wrapper.classList.remove('workspace-locked');
+                displaySafariCenterPopup(`${boardKey.toUpperCase()} BOARD UNLOCKED 🔓`, "Writing permissions active.");
+            }
+        }
+
+        function selectActiveToolMode(boardKey, toolType) {
+            triggerChibiAudioPopClick();
+            const state = boardStateEngine[boardKey];
+            state.currentTool = toolType;
+
+            const penBtn = document.getElementById(`tool-pen-${boardKey}`);
+            const eraseBtn = document.getElementById(`tool-erase-${boardKey}`);
+
+            if (toolType === "pen") {
+                penBtn.classList.add('active-tool');
+                eraseBtn.classList.remove('active-tool');
+                displaySafariCenterPopup("TOOL CHANGED: PEN 🖊", `Board: ${boardKey.toUpperCase()}`);
+            } else {
+                eraseBtn.classList.add('active-tool');
+                penBtn.classList.remove('active-tool');
+                displaySafariCenterPopup("TOOL CHANGED: ERASER 🧽", `Board: ${boardKey.toUpperCase()}`);
+            }
+        }
+
+        function updatePenColorSelection(boardKey, selectedHexColor, elementNode) {
+            triggerChibiAudioPopClick();
+            const state = boardStateEngine[boardKey];
+            state.currentColor = selectedHexColor;
+
+            if (state.currentTool !== "pen") {
+                const penBtn = document.getElementById(`tool-pen-${boardKey}`);
+                const eraseBtn = document.getElementById(`tool-erase-${boardKey}`);
+                state.currentTool = "pen";
+                penBtn.classList.add('active-tool');
+                eraseBtn.classList.remove('active-tool');
+            }
+
+            const swatchesList = elementNode.parentElement.querySelectorAll('.color-swatch-node');
+            swatchesList.forEach(node => node.classList.remove('selected-swatch'));
+            elementNode.classList.add('selected-swatch');
+        }
+
+        function updatePenSizeSelection(boardKey, pixelWidthMetric, elementNode) {
+            triggerChibiAudioPopClick();
+            const state = boardStateEngine[boardKey];
+            state.currentSize = pixelWidthMetric;
+
+            const parentRow = elementNode.parentElement;
+            parentRow.querySelector(`#size-thin-${boardKey}`).classList.remove('active-size');
+            parentRow.querySelector(`#size-med-${boardKey}`).classList.remove('active-size');
+            parentRow.querySelector(`#size-thick-${boardKey}`).classList.remove('active-size');
+
+            elementNode.classList.add('active-size');
+
+            let sizeTagLabelText = "Medium";
+            if (pixelWidthMetric === 4) sizeTagLabelText = "Thin";
+            if (pixelWidthMetric === 24) sizeTagLabelText = "Thick";
+
+            displaySafariCenterPopup(`SIZE: ${sizeTagLabelText} 📏`, `Board: ${boardKey.toUpperCase()}`);
+        }
+
+        function purgeBoardCanvasContext(boardKey) {
+            triggerChibiAudioPopClick();
+            const state = boardStateEngine[boardKey];
+            
+            state.ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
+            displaySafariCenterPopup("BOARD CLEARED 🧹", `Cleared context for ${boardKey.toUpperCase()} side.`);
+        }
+
+        function displaySafariCenterPopup(mainHeadingString, subDetailString) {
+            const popupOverlayNode = document.getElementById('popup-alert-card');
+            const mainTextContainer = document.getElementById('popup-message-main');
+            const subTextContainer = document.getElementById('popup-message-sub');
+
+            mainTextContainer.innerText = mainHeadingString;
+            subTextContainer.innerText = subDetailString || "";
+
+            if (alertPopupAutoDismissTimerRef) {
+                clearTimeout(alertPopupAutoDismissTimerRef);
+            }
+
+            popupOverlayNode.classList.add('popup-visible');
+
+            alertPopupAutoDismissTimerRef = setTimeout(() => {
+                popupOverlayNode.classList.remove('popup-visible');
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

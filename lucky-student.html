@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zoo Safari Lucky Student Picker</title>
+    <link href="https://fonts.googleapis.com/css2?family=JUA&family=Lilita+One&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables & Theme Palette */
+        :root {
+            --pastel-brown: #A67C52;
+            --pastel-yellow: #FFF3CD;
+            --pastel-green: #D4EDDA;
+            --warm-cream: #FDFBF7;
+            --soft-orange: #FFE0B2;
+            --text-brown: #5C3A21;
+            --white: #FFFFFF;
+            --accent-red: #FF6B6B;
+            --muted-gray: #BDC3C7;
+
+            /* Safari Color Enhancements */
+            --safari-yellow: #FFD54F;
+            --safari-orange: #FFB74D;
+            --safari-green-glow: #A5D6A7;
+            
+            /* Unified Box Background Upgrades */
+            --safari-box-cream: #FFF8E1;
+            --safari-box-yellow: #FFE082;
+
+            /* Earthy Safari Palette for Numbers */
+            --deep-safari-brown: #6D4C41;
+            --soft-cream-white: #FFF3E0;
+            --warm-beige-glow: #F5E6C8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Full Screen No-Scroll Configuration */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Layout */
+        header {
+            background-color: var(--pastel-brown);
+            color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+
+        .branding {
+            font-size: 1.1rem;
+            line-height: 1.3;
+            white-space: pre-line;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Modern Cute Safari Buttons */
+        button, .btn {
+            font-family: 'JUA', sans-serif;
+            background-color: var(--warm-cream);
+            color: var(--text-brown);
+            border: 3px solid var(--pastel-brown);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 0 var(--pastel-brown);
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--soft-orange);
+            transform: translateY(-2px);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--pastel-brown);
+        }
+
+        /* Main Core Action Button: Choose Button */
+        button#btn-choose-student {
+            background-color: var(--pastel-yellow);
+            border: 4px solid var(--text-brown);
+            padding: 12px 24px;
+            font-size: 1.4rem;
+            border-radius: 25px;
+            box-shadow: 0 6px 0 var(--text-brown);
+            font-weight: bold;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        button#btn-choose-student:hover {
+            background-color: var(--soft-orange);
+            transform: scale(1.05) translateY(-2px);
+        }
+
+        button#btn-choose-student:active {
+            transform: scale(0.98) translateY(4px);
+            box-shadow: 0 2px 0 var(--text-brown);
+        }
+
+        button#btn-choose-student:disabled {
+            background-color: var(--muted-gray);
+            border-color: #7F8C8D;
+            box-shadow: 0 4px 0 #7F8C8D;
+            color: #7F8C8D;
+            cursor: not-allowed;
+            animation: none;
+            transform: none;
+        }
+
+        /* Teacher Setup Controls Panel */
+        .controls-panel {
+            background-color: var(--pastel-yellow);
+            border: 3px dashed var(--pastel-brown);
+            border-radius: 15px;
+            padding: 8px 20px;
+            margin: 8px auto;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+        }
+
+        .control-group input {
+            font-family: 'JUA', sans-serif;
+            width: 80px;
+            padding: 5px 10px;
+            font-size: 1.2rem;
+            border: 2px solid var(--pastel-brown);
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            background-color: var(--white);
+        }
+
+        .step-btn {
+            padding: 4px 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .status-counter {
+            font-size: 1.1rem;
+            background: rgba(166, 124, 82, 0.15);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Main Focus Screen Layout */
+        main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CHOSEN STUDENT DISPLAY BACKGROUND - UNIFIED SAFARI TREASURE PANEL */
+        .large-selection-window {
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.92) 0%, rgba(255, 224, 130, 0.92) 100%);
+            border: 8px solid var(--pastel-brown);
+            border-radius: 45px;
+            width: 95%;
+            max-width: 900px;
+            height: 85%;
+            max-height: 550px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                inset 0 0 35px rgba(255, 213, 79, 0.4), 
+                0 16px 0 var(--pastel-brown),
+                0 0 30px rgba(165, 214, 167, 0.25);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Safari-Themed Border Accents */
+        .large-selection-window::before {
+            content: "🐾";
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 2rem;
+            opacity: 0.4;
+        }
+
+        .large-selection-window::after {
+            content: "🦁";
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 2.2rem;
+            opacity: 0.4;
+        }
+
+        /* Rolling Showcase State */
+        .large-selection-window.rolling-active {
+            animation: slotShake 0.15s infinite alternate;
+            border-color: var(--safari-orange);
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.95) 0%, rgba(255, 183, 77, 0.95) 100%);
+            box-shadow: 
+                inset 0 0 50px rgba(255, 183, 77, 0.5), 
+                0 16px 0 var(--safari-orange),
+                0 0 40px rgba(255, 183, 77, 0.35);
+        }
+
+        /* Winner Reveal State */
+        .large-selection-window.winner-active {
+            background: linear-gradient(135deg, rgba(255, 248, 225, 0.95) 0%, rgba(212, 237, 218, 0.95) 100%);
+            border-color: #82af91;
+            box-shadow: 
+                inset 0 0 45px rgba(165, 214, 167, 0.6), 
+                0 16px 0 #82af91,
+                0 0 45px rgba(165, 214, 167, 0.5);
+            animation: winnerBounce 0.6s ease-out;
+        }
+
+        /* State Label Subtext */
+        .display-label {
+            font-size: min(2.5rem, 5vh);
+            color: var(--text-brown);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* NUMBER DISPLAY STYLE - NEW FONT & ABSOLUTELY CLEAN FLAT STYLING */
+        .display-number {
+            font-family: 'Lilita One', sans-serif; /* Applied ONLY to the big center number display */
+            font-size: var(--num-size, 10rem);
+            font-weight: normal;
+            line-height: 1;
+            transition: transform 0.05s ease-in-out;
+            padding: 10px;
+            
+            /* REMOVED ALL OUTLINES AND STROKES COMPLETELY */
+            -webkit-text-stroke: 0px transparent;
+        }
+
+        /* Welcome/Idle Screen Specific Styles */
+        .display-number.idle-state {
+            color: #FDFBF7;
+            text-shadow: 
+                0 4px 15px rgba(166, 124, 82, 0.25), 
+                0 0 25px rgba(165, 214, 167, 0.6);
+        }
+
+        /* Rolling State Display Style */
+        .display-number.rolling-state {
+            background: linear-gradient(to bottom, var(--deep-safari-brown) 0%, #8D6E63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 0px transparent; /* Ensures complete flat presentation */
+            filter: drop-shadow(0 0 15px var(--warm-beige-glow));
+        }
+
+        /* Deep Earthy Natural Safari Discovery Selected Winner Number Style */
+        .display-number.winner-state {
+            background: linear-gradient(to bottom, #8D6E63 0%, var(--deep-safari-brown) 60%, #4E342E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* REMOVED OUTLINE ENTIRELY FOR A CLEAN, FLAT AND CARTOONISH LOOK */
+            -webkit-text-stroke: 0px transparent;
+            
+            /* GLOW EFFECT: Kept subtle soft warm beige/cream environment container shadows */
+            filter: drop-shadow(0 4px 12px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 25px var(--warm-beige-glow));
+            
+            animation: safariEarthyGlowCycle 4s infinite ease-in-out;
+        }
+
+        /* SELECTED NOTIFICATION STYLE */
+        .selected-footnote {
+            font-size: min(2rem, 4vh);
+            font-weight: bold;
+            margin-top: 15px;
+            color: var(--deep-safari-brown);
+            text-shadow: 0 2px 10px rgba(245, 230, 200, 0.6);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        /* Universal Elements Overlay */
+        .floating-label {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFFFFF !important;
+            -webkit-text-stroke: 2px #000000;
+            text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000, 0px 0px 20px #FFF9C4;
+            pointer-events: none;
+            animation: floatUpFade 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            z-index: 2000;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.9;
+            z-index: 2500;
+        }
+
+        /* Core Graphical Engine Animations */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Smooth Natural Theme Glow Shifts */
+        @keyframes safariEarthyGlowCycle {
+            0%, 100% { filter: drop-shadow(0 4px 12px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 20px var(--warm-beige-glow)); }
+            50% { filter: drop-shadow(0 4px 12px rgba(109, 76, 65, 0.35)) drop-shadow(0 0 30px #FFF8E1); }
+        }
+
+        @keyframes slotShake {
+            0% { transform: translate(3px, 2px) rotate(0deg); }
+            100% { transform: translate(-3px, -2px) rotate(-0.8deg); }
+        }
+
+        @keyframes winnerBounce {
+            0% { transform: scale(0.4); }
+            60% { transform: scale(1.1); }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { opacity: 1; transform: translateY(-50px) scale(1.3); }
+            100% { opacity: 0; transform: translateY(-110px) scale(1); }
+        }
+
+        /* Font Sizing CSS Variables by Device Profiles */
+        @media (min-width: 1025px) {
+            :root { --num-size: clamp(120px, 25vh, 260px); }
+        }
+        @media (max-width: 1024px) {
+            :root { --num-size: clamp(90px, 20vh, 180px); }
+        }
+        @media (max-width: 480px) {
+            :root { --num-size: clamp(60px, 18vh, 120px); }
+        }
+
+        /* Responsive UI Media Breakpoints */
+        @media (max-width: 768px) {
+            header {
+                justify-content: center;
+                text-align: center;
+                padding: 8px 10px;
+                gap: 10px;
+            }
+            .branding {
+                font-size: 0.9rem;
+            }
+            .nav-buttons {
+                justify-content: center;
+                width: 100%;
+                gap: 8px;
+            }
+            button, .btn {
+                padding: 6px 12px;
+                font-size: 0.95rem;
+            }
+            button#btn-choose-student {
+                font-size: 1.1rem;
+                padding: 8px 16px;
+            }
+            .controls-panel {
+                width: 95%;
+                margin: 4px auto;
+                padding: 6px 12px;
+            }
+            .large-selection-window {
+                height: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="branding">Made by: Mikee B. Gamboa<br>"Teacher Mikee" F.E.T</div>
+        <div class="nav-buttons">
+            <button id="btn-choose-student" onclick="chooseLuckyStudent()">🎯 CHOOSE STUDENT</button>
+            <button onclick="resetPickerPool()">🔄 Reset Pool</button>
+        </div>
+    </header>
+
+    <div class="controls-panel">
+        <div class="control-group">
+            <label>Total Students:</label>
+            <button class="btn step-btn" onclick="adjustStudentCount(-1)">-</button>
+            <input type="number" id="input-student-count" value="20" min="1" max="200" onchange="handleManualInput()">
+            <button class="btn step-btn" onclick="adjustStudentCount(1)">+</button>
+        </div>
+        <div class="status-counter" id="pool-counter-status">
+            Remaining: 20 / 20
+        </div>
+    </div>
+
+    <main>
+        <div id="main-selection-window" class="large-selection-window">
+            <div id="display-label" class="display-label">🎯</div>
+            <div id="display-number" class="display-number idle-state">READY?</div>
+            <div id="selected-footnote" class="selected-footnote" style="display: none;">LUCKY PICK!</div>
+        </div>
+    </main>
+
+    <script>
+        // State Machine Management Tracking System
+        let totalStudents = 20;
+        let selectedStudentsPool = []; 
+        let isRollingActive = false;
+        let audioCtx = null;
+
+        // Safari Theme Phrase Options for Notification Randomizer
+        const safariPhrases = [
+            "🦁 SAFARI STAR!",
+            "🌟 CHOSEN!",
+            "🎉 YOUR TURN!",
+            "🐾 LUCKY PICK!",
+            "🌿 SELECTED!"
+        ];
+
+        // Context Setup Engine Triggered by Action Input
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Web Audio Sound FX Procedural Generation Synthesizer
+        function playSystemSound(type, progress = 0) {
+            initAudioContext();
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'tick') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const baseFreq = 300 - (progress * 120); 
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq + 50, now + 0.03);
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.03);
+            } 
+            else if (type === 'reveal') {
+                const frequencies = [293.66, 349.23, 440.00, 587.33, 698.46]; 
+                frequencies.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + idx * 0.05 + 0.2);
+                    
+                    gain.gain.setValueAtTime(0.25, now + idx * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.05);
+                    osc.stop(now + idx * 0.05 + 0.35);
+                });
+            } 
+            else if (type === 'reset') {
+                [220, 330].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.12);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.12);
+                });
+            }
+        }
+
+        // Live Pools Count Feedback System (Background Logic Maintained)
+        function updateStatusCounterText() {
+            const remainingCount = totalStudents - selectedStudentsPool.length;
+            const counterLabel = document.getElementById('pool-counter-status');
+            counterLabel.innerText = `Remaining: ${remainingCount} / ${totalStudents}`;
+
+            const chooseBtn = document.getElementById('btn-choose-student');
+            if (remainingCount === 0) {
+                chooseBtn.disabled = true;
+            } else {
+                chooseBtn.disabled = false;
+            }
+        }
+
+        // Input Modality Handlers: Step adjustment button
+        function adjustStudentCount(amount) {
+            const input = document.getElementById('input-student-count');
+            let currentVal = parseInt(input.value) || 20;
+            currentVal += amount;
+            input.value = currentVal;
+            handleManualInput();
+        }
+
+        // Input Modality Handlers: Direct input processing
+        function handleManualInput() {
+            if (isRollingActive) return;
+            const input = document.getElementById('input-student-count');
+            let value = parseInt(input.value);
+
+            if (isNaN(value) || value < 1) value = 1;
+            if (value > 200) value = 200; 
+
+            input.value = value;
+            totalStudents = value;
+
+            selectedStudentsPool = [];
+            
+            const windowEl = document.getElementById('main-selection-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footEl = document.getElementById('selected-footnote');
+            
+            windowEl.className = "large-selection-window";
+            labelEl.innerText = "🎯";
+            
+            numEl.className = "display-number idle-state";
+            numEl.innerText = "READY?";
+            footEl.style.display = "none";
+            
+            updateStatusCounterText();
+        }
+
+        // Core App Feature Execution Loop Logic: Non-Repeating Random Cycle
+        function chooseLuckyStudent() {
+            if (isRollingActive) return;
+            
+            const validCandidatePool = [];
+            for (let i = 1; i <= totalStudents; i++) {
+                if (!selectedStudentsPool.includes(i)) {
+                    validCandidatePool.push(i);
+                }
+            }
+
+            if (validCandidatePool.length === 0) return;
+
+            isRollingActive = true;
+            
+            const windowEl = document.getElementById('main-selection-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footEl = document.getElementById('selected-footnote');
+            
+            windowEl.className = "large-selection-window rolling-active";
+            labelEl.innerText = "STUDENT";
+            numEl.className = "display-number rolling-state";
+            footEl.style.display = "none";
+
+            let selectionDuration = 1800; 
+            let initialInterval = 50; 
+            let currentInterval = initialInterval;
+            let elapsedDuration = 0;
+            let finalWinnerID = -1;
+
+            // DRUM ROLL ANIMATION: Roll Engine Mechanism Loop inside Large Display
+            function executionStep() {
+                const structuralPreviewID = Math.floor(Math.random() * totalStudents) + 1;
+                numEl.innerText = structuralPreviewID;
+                
+                const timelineProgress = elapsedDuration / selectionDuration;
+                playSystemSound('tick', timelineProgress);
+
+                elapsedDuration += currentInterval;
+
+                if (elapsedDuration < selectionDuration) {
+                    if (elapsedDuration > selectionDuration * 0.7) {
+                        currentInterval += 25; 
+                    }
+                    setTimeout(executionStep, currentInterval);
+                } else {
+                    finalWinnerID = validCandidatePool[Math.floor(Math.random() * validCandidatePool.length)];
+                    finalizeSelectedWinner(finalWinnerID);
+                }
+            }
+
+            setTimeout(executionStep, currentInterval);
+        }
+
+        // WINNER REVEAL Framework & Visual Effects
+        function finalizeSelectedWinner(winnerID) {
+            const windowEl = document.getElementById('main-selection-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footEl = document.getElementById('selected-footnote');
+            
+            selectedStudentsPool.push(winnerID);
+            
+            // Apply Visual Winner Reveal Classes & Text Structures
+            windowEl.className = "large-selection-window winner-active";
+            labelEl.innerText = "🎉 STUDENT";
+            
+            numEl.className = "display-number winner-state";
+            numEl.innerText = winnerID;
+            
+            // Randomly choose safari-themed phrase notification each time
+            const chosenPhrase = safariPhrases[Math.floor(Math.random() * safariPhrases.length)];
+            footEl.innerText = chosenPhrase;
+            footEl.style.display = "block";
+
+            // Trigger structural rendering updates across coordinates
+            const rect = numEl.getBoundingClientRect();
+            const targetX = rect.left + rect.width / 2;
+            const targetY = rect.top + rect.height / 2;
+            
+            triggerCelebrationFx(targetX, targetY);
+            createFloatingLabel("Selected! 🌟", targetX, targetY);
+
+            playSystemSound('reveal');
+            
+            isRollingActive = false;
+            updateStatusCounterText();
+            
+            // Check if full pool exhausted to swap labels safely
+            if (totalStudents - selectedStudentsPool.length === 0) {
+                setTimeout(() => {
+                    numEl.innerText = "ALL CHOSEN! 🎉";
+                    footEl.style.display = "none";
+                }, 2200);
+            }
+        }
+
+        // High-Contrast Interactive Floating Text Engine
+        function createFloatingLabel(text, x, y) {
+            const label = document.createElement('div');
+            label.className = 'floating-label';
+            label.innerText = text;
+            label.style.left = `${x - 60}px`;
+            label.style.top = `${y - 40}px`;
+            
+            document.body.appendChild(label);
+            setTimeout(() => label.remove(), 1200);
+        }
+
+        // Particle Burst System (Stars, Confetti, Shapes)
+        function triggerCelebrationFx(targetX, targetY) {
+            const particleColors = ['#FFD166', '#06D6A0', '#118AB2', '#FF6B6B', '#8338EC', '#FB8500'];
+            const totalParticles = 30;
+
+            for (let i = 0; i < totalParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const isStar = Math.random() > 0.5;
+                if (isStar) {
+                    particle.innerText = "⭐";
+                    particle.style.fontSize = `${Math.random() * 15 + 18}px`;
+                } else {
+                    particle.style.width = `${Math.random() * 10 + 8}px`;
+                    particle.style.height = `${Math.random() * 10 + 8}px`;
+                    particle.style.backgroundColor = particleColors[Math.floor(Math.random() * particleColors.length)];
+                    particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                }
+
+                particle.style.left = `${targetX}px`;
+                particle.style.top = `${targetY}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 180 + 80;
+                const spreadX = Math.cos(angle) * speed;
+                const spreadY = Math.sin(angle) * speed - 50; 
+
+                particle.animate([
+                    { transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: `translate(${spreadX}px, ${spreadY}px) rotate(${Math.random() * 360}deg) scale(0.3)`, opacity: 0 }
+                ], {
+                    duration: 1400,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.25, 1)'
+                });
+
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1400);
+            }
+        }
+
+        // Action Trigger Framework: Full Pool Clear Reset Setup
+        function resetPickerPool() {
+            if (isRollingActive) return;
+            playSystemSound('reset');
+            
+            selectedStudentsPool = [];
+            
+            const windowEl = document.getElementById('main-selection-window');
+            const labelEl = document.getElementById('display-label');
+            const numEl = document.getElementById('display-number');
+            const footEl = document.getElementById('selected-footnote');
+            
+            windowEl.className = "large-selection-window";
+            labelEl.innerText = "🦁";
+            
+            numEl.className = "display-number idle-state";
+            numEl.innerText = "CHOOSE A STUDENT";
+            footEl.style.display = "none";
+
+            windowEl.animate([
+                { transform: 'scale(1)' },
+                { transform: 'scale(0.96)' },
+                { transform: 'scale(1)' }
+            ], { duration: 300, easing: 'ease-in-out' });
+
+            updateStatusCounterText();
+        }
+
+        // Bootstrapping Setup Initialization Loop
+        updateStatusCounterText();
+    </script>
+</body>
+</html>

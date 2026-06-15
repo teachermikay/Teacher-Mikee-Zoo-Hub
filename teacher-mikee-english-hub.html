@@ -1,0 +1,401 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Teacher Mikee's English Hub</title>
+    
+    <!-- Classroom Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Balsamiq+Sans:wght@400;700&family=Jua&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Zoo Safari Color Palette */
+            --safari-green: #a7c957;
+            --safari-mud: #606c38;
+            --pastel-cream: #fefae0;
+            --pastel-orange: #dda15e;
+            --safari-terracotta: #bc6c25;
+            --text-dark: #283618;
+            --top-bar-height: 135px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100dvh;
+            overflow: hidden;
+            font-family: 'Balsamiq Sans', cursive;
+            background-color: var(--pastel-cream);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HUB UPPER ZONE (HEADER + NAVIGATION) --- */
+        header {
+            height: var(--top-bar-height);
+            background: linear-gradient(135deg, #e6eed6 0%, var(--pastel-cream) 100%);
+            border-bottom: 5px solid var(--safari-mud);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px 8px 20px;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(96, 108, 56, 0.15);
+        }
+
+        .title-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: clamp(1.3rem, 3.5vw, 2.2rem);
+            color: var(--safari-mud);
+            text-align: center;
+            flex-grow: 1;
+            text-shadow: 2px 2px 0px #ffffff, 4px 4px 0px var(--pastel-orange);
+            white-space: nowrap;
+        }
+
+        /* --- GLOBAL CONTROL ACTION --- */
+        .global-reset-btn {
+            font-family: 'Jua', sans-serif;
+            font-size: clamp(0.75rem, 2vw, 0.95rem);
+            background-color: #ff605c;
+            color: white;
+            border: 3px solid var(--text-dark);
+            border-radius: 12px;
+            padding: 6px 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--text-dark);
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .global-reset-btn:active {
+            transform: translateY(-50%) translateY(3px);
+            box-shadow: 0 1px 0 var(--text-dark);
+        }
+
+        /* --- TOP HORIZONTAL NAVIGATION BAR --- */
+        nav {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            font-family: 'Balsamiq Sans', cursive;
+            font-weight: 700;
+            font-size: clamp(0.75rem, 1.6vw, 1.05rem);
+            color: var(--text-dark);
+            background-color: white;
+            border: 3px solid var(--safari-mud);
+            border-radius: 16px;
+            padding: 8px 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 5px 0 var(--safari-mud);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        /* Sub-Tool Specific Colors to Match Chibi Vibe */
+        .nav-btn[data-app="rewards"] { border-color: #ff9f1c; box-shadow: 0 5px 0 #ff9f1c; }
+        .nav-btn[data-app="lucky"] { border-color: #2ec4b6; box-shadow: 0 5px 0 #2ec4b6; }
+        .nav-btn[data-app="gselect"] { border-color: #e71d36; box-shadow: 0 5px 0 #e71d36; }
+        .nav-btn[data-app="gmaker"] { border-color: #9b5de5; box-shadow: 0 5px 0 #9b5de5; }
+        .nav-btn[data-app="timer"] { border-color: #f15bb5; box-shadow: 0 5px 0 #f15bb5; }
+        .nav-btn[data-app="whiteboard"] { border-color: #00bbf9; box-shadow: 0 5px 0 #00bbf9; }
+
+        /* Active Navigation States */
+        .nav-btn.active[data-app="rewards"] { background-color: #ff9f1c; color: white; }
+        .nav-btn.active[data-app="lucky"] { background-color: #2ec4b6; color: white; }
+        .nav-btn.active[data-app="gselect"] { background-color: #e71d36; color: white; }
+        .nav-btn.active[data-app="gmaker"] { background-color: #9b5de5; color: white; }
+        .nav-btn.active[data-app="timer"] { background-color: #f15bb5; color: white; }
+        .nav-btn.active[data-app="whiteboard"] { background-color: #00bbf9; color: white; }
+
+        .nav-btn.active {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+
+        /* --- APPLICATION ENVIRONMENT STAGE --- */
+        #app-stage {
+            flex-grow: 1;
+            width: 100vw;
+            height: calc(100dvh - var(--top-bar-height));
+            position: relative;
+            background-color: #ffffff;
+        }
+
+        /* Multi-Iframe Layering Engine */
+        .app-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .app-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* --- FALLBACK & PROTOCOL WARNING DESIGNS --- */
+        .compatibility-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--pastel-cream);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .compatibility-card h2 {
+            font-family: 'Bungee', cursive;
+            color: var(--safari-terracotta);
+            margin-bottom: 12px;
+            font-size: clamp(1.1rem, 3vw, 1.8rem);
+        }
+
+        .compatibility-card p {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            max-width: 650px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        /* Responsive Breakpoint Adjustment for Smartboards & Tablets */
+        @media (max-width: 768px) {
+            header {
+                height: auto;
+                padding: 8px 12px;
+            }
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+            }
+            .nav-btn {
+                flex: none;
+                width: 31%;
+                padding: 6px 2px;
+            }
+            .global-reset-btn {
+                position: relative;
+                transform: none;
+                right: auto;
+                top: auto;
+                margin-top: 4px;
+            }
+            .title-container {
+                flex-direction: column;
+                gap: 4px;
+            }
+            :root {
+                --top-bar-height: auto;
+            }
+            #app-stage {
+                height: auto;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OS SURFACE BAR CONTROLLER -->
+    <header id="hub-control-center">
+        <div class="title-container">
+            <h1>🦁 Teacher Mikee’s English Hub</h1>
+            <button class="global-reset-btn" onclick="triggerSystemReset()" title="Reset states for all running tools">
+                🔄 RESET ALL
+            </button>
+        </div>
+
+        <!-- 6-Channel Direct Module Matrix Navigation Toggle System -->
+        <nav role="tablist">
+            <button class="nav-btn" data-app="rewards" onclick="switchActiveChannel('rewards')">💰 Rewards</button>
+            <button class="nav-btn" data-app="lucky" onclick="switchActiveChannel('lucky')">🎯 Lucky Student</button>
+            <button class="nav-btn" data-app="gselect" onclick="switchActiveChannel('gselect')">👥 Group Select</button>
+            <button class="nav-btn" data-app="gmaker" onclick="switchActiveChannel('gmaker')">🧑‍🤝‍🧑 Group Maker</button>
+            <button class="nav-btn" data-app="timer" onclick="switchActiveChannel('timer')">⏱️ Timer</button>
+            <button class="nav-btn" data-app="whiteboard" onclick="switchActiveChannel('whiteboard')">✏️ Whiteboard</button>
+        </nav>
+    </header>
+
+    <!-- CORE DISPLAY STAGE FOR EXTERNAL TOOLS -->
+    <main id="app-stage">
+        
+        <!-- MODULE STACK LAUNCH CONTAINERS (Each with its unique isolated Iframe configuration) -->
+        <div id="container-rewards" class="app-container">
+            <iframe id="iframe_rewards" name="iframe_rewards" src="about:blank"></iframe>
+        </div>
+
+        <div id="container-lucky" class="app-container">
+            <iframe id="iframe_lucky_student" name="iframe_lucky_student" src="about:blank"></iframe>
+        </div>
+
+        <div id="container-gselect" class="app-container">
+            <iframe id="iframe_group_select" name="iframe_group_select" src="about:blank"></iframe>
+        </div>
+
+        <div id="container-gmaker" class="app-container">
+            <iframe id="iframe_group_maker" name="iframe_group_maker" src="about:blank"></iframe>
+        </div>
+
+        <div id="container-timer" class="app-container">
+            <iframe id="iframe_timer" name="iframe_timer" src="about:blank"></iframe>
+        </div>
+
+        <div id="container-whiteboard" class="app-container">
+            <iframe id="iframe_whiteboard" name="iframe_whiteboard" src="about:blank"></iframe>
+        </div>
+
+        <!-- STAGE BACKUP DESKTOP (Shows behind inactive/unloaded states) -->
+        <div id="stage-fallback-desktop" class="compatibility-card">
+            <h2>Welcome to Your Classroom OS Hub!</h2>
+            <p>Select a tool above to get started. All background tasks, timers, teams, and scores remain fully continuous in the background when swapping screens.</p>
+        </div>
+
+    </main>
+
+    <script>
+        // Exact File Schema Assignment Configuration Mapping Definitions
+        const HUB_ROUTING_MAP = {
+            'rewards': { file: 'rewards.html', id: 'iframe_rewards', initialized: false },
+            'lucky': { file: 'lucky-student.html', id: 'iframe_lucky_student', initialized: false },
+            'gselect': { file: 'group-select.html', id: 'iframe_group_select', initialized: false },
+            'gmaker': { file: 'group-maker.html', id: 'iframe_group_maker', initialized: false },
+            'timer': { file: 'timer.html', id: 'iframe_timer', initialized: false },
+            'whiteboard': { file: 'whiteboard.html', id: 'iframe_whiteboard', initialized: false }
+        };
+
+        let currentActiveChannel = null;
+
+        // On Boot: Mount the default fallback viewport context
+        window.addEventListener('DOMContentLoaded', () => {
+            // Check for initial load constraints or default module execution requirements
+            // Auto-triggering first application screen channel
+            switchActiveChannel('rewards');
+        });
+
+        /**
+         * Channel Switching Core Engine
+         * Implements hidden iframe background persistence state maintenance mechanics
+         */
+        function switchActiveChannel(targetKey) {
+            if (currentActiveChannel === targetKey) return;
+
+            const config = HUB_ROUTING_MAP[targetKey];
+            if (!config) return;
+
+            // Hide the base entry dashboard text pane
+            const fallbackDesktop = document.getElementById('stage-fallback-desktop');
+            if (fallbackDesktop) fallbackDesktop.style.display = 'none';
+
+            // 1. De-assert visual structural state from previous channel view
+            if (currentActiveChannel) {
+                document.getElementById(`container-${currentActiveChannel}`).classList.remove('visible');
+                document.querySelector(`.nav-btn[data-app="${currentActiveChannel}"]`).classList.remove('active');
+            }
+
+            // 2. Perform On-Demand Lazy Initialization if this is the first execution invocation
+            const frameInstance = document.getElementById(config.id);
+            if (!config.initialized) {
+                frameInstance.src = config.file;
+                config.initialized = true;
+            }
+
+            // 3. Assert visibility mappings across layout DOM layer
+            document.getElementById(`container-${targetKey}`).classList.add('visible');
+            document.querySelector(`.nav-btn[data-app="${targetKey}"]`).classList.add('active');
+
+            currentActiveChannel = targetKey;
+        }
+
+        /**
+         * Global Clean Reset Command Pipeline Execution
+         * Broadcasts system data clear actions via forced frame resource recycling loops 
+         * and structured cross-document event messaging pipelines.
+         */
+        function triggerSystemReset() {
+            if (confirm("🚨 RESET HUB STATE?\nThis clears all active timers, groups, rewards, and states across all 6 applications. Are you sure?")) {
+                
+                // Fire internal structural cache purging sequence
+                localStorage.clear();
+                sessionStorage.clear();
+
+                // Interpose over all registered channels to clear active instance properties
+                Object.keys(HUB_ROUTING_MAP).forEach(key => {
+                    const config = HUB_ROUTING_MAP[key];
+                    const frame = document.getElementById(config.id);
+
+                    if (frame && config.initialized) {
+                        try {
+                            // Pipeline 1: PostMessage standard command broadcast
+                            frame.contentWindow.postMessage({ command: 'RESET_TOOL_CONTEXT' }, '*');
+                        } catch (e) {
+                            // Cross-origin security container execution catch
+                        }
+                        
+                        // Pipeline 2: Absolute instance runtime recovery reset fallback
+                        frame.src = config.file;
+                    }
+                });
+
+                alert("⚡ System data context initialized! All loaded tools are fully synchronized to baseline.");
+            }
+        }
+    </script>
+</body>
+</html>
